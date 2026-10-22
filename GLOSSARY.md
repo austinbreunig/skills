@@ -22,6 +22,26 @@ _Avoid_: watch mode, background check
 The mode where `/mindful` judges a finished spec, offers what to cut, simplify or keep, and makes the changes the user accepts.
 _Avoid_: audit, simplicity gate, wu-wei pass
 
+**Ramp plan**:
+The levels a pipeline is pushed through, with the number checks and judgment checks for each level, and where the user gives feedback.
+_Avoid_: ramp config, test plan
+
+**Ramp harness**:
+The test scaffold, kept in the pipeline's own repo, that runs the pipeline through each level of a ramp plan and reports how it held up.
+_Avoid_: test suite, scaffold, QA rig
+
+**Break-it pass**:
+The cheap step before the levels, where made-up hostile inputs try to make the pipeline fail.
+_Avoid_: level 0, fuzzing pass
+
+**Number check**:
+A limit the agent can test alone at a level, such as peak memory, quarantine rate or accuracy on golden fixtures.
+_Avoid_: metric, quantitative check, threshold
+
+**Judgment check**:
+A call only the user can make at a level, by looking at samples of the output.
+_Avoid_: qualitative check, manual review, eyeball test
+
 ## Productivity
 
 **HQ repo**:
