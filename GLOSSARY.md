@@ -12,6 +12,16 @@ _Avoid_: development skill, workflow skill
 A skill in `productivity/` that serves the person across many projects, not one product.
 _Avoid_: personal skill, utility skill
 
+## Lifecycle
+
+**Lens**:
+The mode where `/mindful` stays on through a session and asks one question only when something is being forced or added without need.
+_Avoid_: watch mode, background check
+
+**Review**:
+The mode where `/mindful` judges a finished spec, offers what to cut, simplify or keep, and makes the changes the user accepts.
+_Avoid_: audit, simplicity gate, wu-wei pass
+
 ## Productivity
 
 **HQ repo**:
