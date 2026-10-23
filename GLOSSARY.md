@@ -53,11 +53,11 @@ A GitHub repo the user has added to HQ, so brief and EOD track it. Its issues on
 _Avoid_: project, tracked repo, linked repo
 
 **Jot**:
-A quick note the user writes mid-session, filed under a connected repo at the next EOD.
+A very short note the agent writes from what the user says mid-session, kept in the HQ repo for 7 days and shown in EOD and brief under its repo.
 _Avoid_: note, memo
 
 **EOD compilation**:
-The day's record in the HQ repo: per connected repo, what the sessions covered, issue activity, action items and jots.
+The day's record in the HQ repo: per connected repo, what the sessions covered, issue activity and action items.
 _Avoid_: EOD report, daily log, recap
 
 **Brief**:
