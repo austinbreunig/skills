@@ -61,7 +61,7 @@ The day's record in the HQ repo: per connected repo, what the sessions covered, 
 _Avoid_: EOD report, daily log, recap
 
 **Brief**:
-An at-a-glance view of every connected repo: open PRs, frontier tickets, tickets closed since the last EOD, and where the user left off.
+An at-a-glance view of every connected repo: what was done last time and where things stand now. Shown on its own, and at the end of every EOD.
 _Avoid_: morning brief, status report, standup
 
 ## Shared
