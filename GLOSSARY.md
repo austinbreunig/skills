@@ -14,6 +14,34 @@ _Avoid_: personal skill, utility skill
 
 ## Lifecycle
 
+**Destination**:
+What one cycle aims to reach, anywhere from a POC exploration to a deployed final product.
+_Avoid_: scope, goal, phase
+
+**Main map**:
+The wayfinder map that clears the fog on the product itself: its concepts, algorithms and architecture.
+_Avoid_: design map, product map
+
+**Tracer pipeline**:
+The thinnest end-to-end version of the pipeline, built so a ramp has something real to run on.
+_Avoid_: prototype, POC, skeleton
+
+**Tracer map**:
+The wayfinder map that decides the tracer pipeline. Charted alongside the main map when a cycle needs a ramp.
+_Avoid_: pipeline map
+
+**Ramp map**:
+The wayfinder map that decides the ramp plan and ramp harness. Charted only after the tracer pipeline is built.
+_Avoid_: test map
+
+**Spec sign-off**:
+The user's approval of a spec, together with its tickets and locked seams, from its human page.
+_Avoid_: spec review, plan approval
+
+**PR sign-off**:
+The user's approval of a built spec's pull request, from its human page.
+_Avoid_: code review, merge approval
+
 **Lens**:
 The mode where `/mindful` stays on through a session and asks one question only when something is being forced or added without need.
 _Avoid_: watch mode, background check
