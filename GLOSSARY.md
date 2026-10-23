@@ -67,5 +67,13 @@ _Avoid_: morning brief, status report, standup
 ## Shared
 
 **Human page**:
-A self-contained, beginner-friendly HTML page made by `human` that turns a machine artifact into something a person can decide from.
+A self-contained, visual HTML page made by `human` that turns any context into something a person can understand and reason about at their reader level.
 _Avoid_: show-me doc, report page, explainer
+
+**Human explanation**:
+The in-chat version of what `human` makes, with the same parts as a human page but drawn in plain text.
+_Avoid_: summary, recap, re-pitch
+
+**Reader level**:
+How much the reader already knows (newbie, beginner, proficient or master), which sets the words, background and questions `human` uses.
+_Avoid_: audience, skill level, difficulty
