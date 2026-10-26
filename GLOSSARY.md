@@ -81,11 +81,15 @@ _Avoid_: qualitative check, manual review, eyeball test
 ## Productivity
 
 **HQ repo**:
-The user's private GitHub repo, named at setup, that holds the connected-repo list, EOD compilations and jots.
+The user's private GitHub repo, named at setup, that holds the connected-repo list, EOD compilations, jots and saved repo pages.
 _Avoid_: headquarters, home repo, state repo
 
+**HQ folder**:
+The local clone of the HQ repo on one computer, chosen at setup and recorded in `~/.config/hq/config`.
+_Avoid_: HQ path, local HQ, workspace
+
 **Connected repo**:
-A GitHub repo the user has added to HQ, so brief and EOD track it. Its issues on GitHub are the source of truth for its work.
+A GitHub repo the user has added to HQ, so brief and EOD track it. Stored as `owner/name`, never a local path. Its issues on GitHub are the source of truth for its work.
 _Avoid_: project, tracked repo, linked repo
 
 **Jot**:
