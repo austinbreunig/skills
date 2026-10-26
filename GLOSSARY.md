@@ -51,7 +51,7 @@ The mode where `/mindful` stays on through a session and asks one question only 
 _Avoid_: watch mode, background check
 
 **Review**:
-The mode where `/mindful` judges a finished spec, offers what to cut, simplify or keep, and makes the changes the user accepts.
+The mode where `/mindful` judges a finished spec (or its tickets, or a built branch) for shape and approach, applies its cuts directly, and writes each cut and why on the spec so the user can accept or undo it at spec sign-off.
 _Avoid_: audit, simplicity gate, wu-wei pass
 
 **Entry point**:
