@@ -35,7 +35,7 @@ The wayfinder map that decides the tracer pipeline. Charted alongside the main m
 _Avoid_: pipeline map
 
 **Ramp map**:
-The wayfinder map that decides the ramp plan and ramp harness. Charted only after the tracer pipeline is built.
+The wayfinder map, charted by `/ramp`, that decides the ramp plan. Its destination is one spec for the ramp harness. Charted only after the tracer pipeline is built.
 _Avoid_: test map
 
 **Spec sign-off**:
@@ -54,6 +54,10 @@ _Avoid_: watch mode, background check
 The mode where `/mindful` judges a finished spec (or its tickets, or a built branch) for shape and approach, applies its cuts directly, and writes each cut and why on the spec so the user can accept or undo it at spec sign-off.
 _Avoid_: audit, simplicity gate, wu-wei pass
 
+**Entry point**:
+The one command that takes an input and an output location and runs the whole pipeline. `/ramp` won't plan without one.
+_Avoid_: main script, runner
+
 **Ramp plan**:
 The levels a pipeline is pushed through, with the number checks and judgment checks for each level, and where the user gives feedback.
 _Avoid_: ramp config, test plan
@@ -63,7 +67,7 @@ The test scaffold, kept in the pipeline's own repo, that runs the pipeline throu
 _Avoid_: test suite, scaffold, QA rig
 
 **Break-it pass**:
-The cheap step before the levels, where made-up hostile inputs try to make the pipeline fail.
+The cheap step before level 1, where made-up hostile inputs try to make the pipeline fail. Its tests are kept as a regression suite.
 _Avoid_: level 0, fuzzing pass
 
 **Number check**:
