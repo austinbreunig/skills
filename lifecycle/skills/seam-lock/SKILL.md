@@ -9,6 +9,8 @@ Parallel implementer agents fail at the boundaries between them. to-spec has alr
 
 It does not rewrite the spec or re-slice the tickets. It amends them.
 
+**Two ways to run.** If `.lifecycle/` exists, this is an agent step in lifecycle's spec chain (lifecycle skips it for the ramp harness spec). It never stops to ask: anything the user must decide goes on the spec as an open question for spec sign-off. If there is no `.lifecycle/`, it runs alone: ask the user directly and skip STATE.md.
+
 Inputs: the spec issue, its implementation tickets, the repo's ADRs and domain glossary (wherever `setup-matt-pocock-skills` configured them), and `.lifecycle/STATE.md` if present.
 
 ## 1. Pre-flight (thin, usually silent)
@@ -17,7 +19,7 @@ Inputs: the spec issue, its implementation tickets, the repo's ADRs and domain g
 2. List only the *new* decisions this step needs: exact interface shapes, schemas, conventions (units, CRS, IDs, nulls, time zones, error handling), and which golden fixtures to use.
 3. Draft a default for each, drawing on the spec and the ADRs.
 4. Flag any decision that is one-way or low-confidence.
-5. If nothing is flagged, record the new decisions as ADRs and continue. If something is flagged, send one short decision sheet (decision, default, reason, each in at most two lines) and keep working on anything that doesn't depend on it.
+5. If nothing is flagged, record the new decisions as ADRs and continue. If something is flagged, raise it (decision, default, reason, each in at most two lines). In a lifecycle run, write it on the spec as an open question and go ahead with the default. Alone, send one short decision sheet and keep working on anything that doesn't depend on it.
 
 ## 2. Commit the seams
 
@@ -52,13 +54,12 @@ Spawn one fresh subagent that has seen none of this session. Give it pointers on
 
 Then:
 - Fix every two-way finding yourself, in the contracts, fixtures or ticket amendments.
-- Batch the one-way findings into a single decision sheet for the user.
+- Batch the one-way findings: in a lifecycle run, add them to the spec's open questions; alone, send them as one decision sheet.
 - Allow at most two adversary rounds. After that, record what remains as ADRs and stop.
 
 ## 5. Hand-off
 
-Update `.lifecycle/STATE.md`: add links to the contracts and fixtures and set the next step to Build. Report in at most five lines: seams locked, tickets amended, findings fixed, anything escalated. Finish with the next command:
+Report in at most five lines: seams locked, tickets amended, findings fixed, anything escalated.
 
-```
-/implement-spec <spec>
-```
+- **In a lifecycle run:** add links to the contracts and fixtures in `.lifecycle/STATE.md`, then hand back to lifecycle. Don't print a next command; lifecycle picks the next step.
+- **Alone:** don't create STATE.md. End with the plain report.
