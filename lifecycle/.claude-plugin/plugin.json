@@ -1,0 +1,5 @@
+{
+  "name": "lifecycle",
+  "description": "Carry one product from idea to production.",
+  "dependencies": ["human", "mattpocock-skills@claude-plugins-official"]
+}

@@ -1,5 +1,5 @@
 ---
-name: conductor
+name: lifecycle
 description: Navigator for a product's whole lifecycle across many fresh sessions: reads state, says the exact next command, runs agent-callable steps, guards appetite and value.
 ---
 

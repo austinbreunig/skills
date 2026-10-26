@@ -1,0 +1,23 @@
+{
+  "name": "austinbreunig-skills",
+  "description": "Lifecycle and productivity skills for Claude Code.",
+  "owner": { "name": "austinbreunig" },
+  "allowCrossMarketplaceDependenciesOn": ["claude-plugins-official"],
+  "plugins": [
+    {
+      "name": "lifecycle",
+      "source": "./lifecycle",
+      "description": "Carry one product from idea to production."
+    },
+    {
+      "name": "productivity",
+      "source": "./productivity",
+      "description": "Keep track of all your repos from one place."
+    },
+    {
+      "name": "human",
+      "source": "./human",
+      "description": "Explain anything in plain words and pictures, at the reader's level."
+    }
+  ]
+}
