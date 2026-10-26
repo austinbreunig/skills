@@ -1,82 +1,116 @@
 ---
 name: human
-description: Turn a machine artifact (PR, ramp report, spec, or Wayfinder map) into a beginner-friendly, highly visual, self-contained HTML page a person can understand and decide from.
+description: Explain, show and guide. Turns any context (a PR, ramp report, spec, Wayfinder map, file, idea or the last message) into a plain-language, visual explanation at the reader's level, in chat or as a self-contained HTML page. Asks guiding questions; never recommends. Use when something didn't land or a person has to understand and decide.
 ---
 
 # Human
 
-Specs, tickets and ADRs are written for machines. This skill writes the version for the person who has to **understand the change and make a decision about it**. The reader is smart but new to this code. They should finish the page in about five minutes, knowing what changed, why, what could go wrong, and what they need to decide.
+Specs, tickets and code are written for machines. This skill writes the version for a person. It has three duties:
+
+1. **Explain:** plain language at the reader's level, with the background they need first.
+2. **Show:** anything complex gets a picture, and the text explains the picture. Complex means a process, a flow, a timeline, or more than two parts that affect each other.
+3. **Guide:** questions that lead the reader to their own answer. **Never a recommendation**, anywhere. A reader who wants the agent's view can ask in chat.
+
+Usable at any time: on an artifact, a repo, or whatever didn't land.
 
 ## Modes
 
-Work out which mode applies from the input, or take it from the argument:
+Take the mode from the argument, or work it out from the input.
 
-- **pr:** a pull request or integration branch. Reads the diff, the linked spec and tickets, test results, and the code-review output.
-- **ramp:** a `RAMP.md`. Reads the level 0 result, the levels, metrics, capacity statement and break list.
-- **spec:** a spec issue, before slicing or after wu-wei.
-- **map:** a Wayfinder map: the decisions so far, the frontier, and the fog.
+| mode | input | default output |
+|---|---|---|
+| pr | a pull request or integration branch: the diff, linked spec and tickets, test results, code-review output | HTML page |
+| ramp | a `RAMP.md`: the break-it result, levels, checks, capacity statement, break list | HTML page |
+| spec | a spec issue | HTML page |
+| map | a Wayfinder map: decisions so far, the frontier, the fog | HTML page |
+| explain | anything else: the last message, a file, an idea | chat |
+
+Flags:
+
+- `--html`: make an HTML page instead of a chat answer. No effect on modes that already default to HTML.
+- `--level newbie|beginner|proficient|master`: the reader level for this call only. Default `beginner`.
+
+## Reader level
+
+| | newbie | beginner (default) | proficient | master |
+|---|---|---|---|---|
+| Reader | 5th grader | knows the basics, shaky on complex parts | knows the basics, needs steering on complex parts | handles jargon, needs help with fine points |
+| Words | everyday words, an analogy for everything | plain words, terms defined | technical words, only domain terms defined | full jargon |
+| Background | 3–4 cards, starting from zero | 2–4 cards on the complex parts | 0–2 cards | none |
+| Visuals | a picture for every idea | a diagram for anything complex | diagrams for the complex parts | diagrams only for fine points |
+| Guiding questions | big picture | cause and effect | trade-offs | edge cases and fine points |
 
 ## 1. Gather facts (from sources only)
 
-Read the artifact and follow its pointers: the linked tickets, ADRs, contracts, diff and test output. Collect real facts:
-- names, numbers, file paths, metrics
-- the decisions made, and the reason given for each
+Read the input and follow its pointers: linked tickets, ADRs, contracts, diff, test output. If the repo has a `GLOSSARY.md` or README, read it for its terms. Collect real facts: names, numbers, file paths, the decisions made and the reason given for each.
 
-**Never invent numbers, results or reasons.** If a fact isn't in the sources, leave it out or mark it plainly as unknown. Every claim on the page should be traceable to a source you can link.
+**Never invent numbers, results or reasons.** If a fact isn't in the sources, leave it out or mark it plainly as unknown. Every claim should trace to a source you can link.
 
 ## 2. Find the story
 
-Before writing anything, answer in one sentence each:
+Answer in one sentence each before writing:
+
 1. What is this, in words a newcomer would use?
 2. Why does it exist? What problem or goal does it serve?
 3. What is the single most important thing the reader must understand?
-4. What decision, if any, does the reader need to make, and what's the recommended answer?
+4. What question, if any, is in front of the reader?
 
-The page is built around these four answers.
+## 3. Sections
 
-## 3. Page structure
+In this order, for every mode. Leave out any section with nothing real in it.
 
-In order. Leave out any section that has nothing real in it.
+1. **Think it through** (top, impossible to miss): one line naming the question from story step 4, then 2–4 guiding questions. Each guiding question points to the section that helps answer it, e.g. "What breaks if the cache is cold? → What could go wrong". Pick the question type from the reader level. If there is nothing to decide, the whole box is the one line "Nothing to decide, just read.", with no guiding questions.
+2. **In one paragraph:** the story from step 2.
+3. **Background:** concept cards, as many as the reader level says. Each card: a plain definition, an everyday example, a small visual, and one trusted source if you can find one. No quizzes or lessons.
+4. **The picture:** at least one diagram of the real mechanism, not decoration.
+   - pr: data or control flow through the parts touched, changed parts highlighted, before/after if behavior changed.
+   - ramp: levels on a chart against the checks, the break point, and accuracy change.
+   - spec: the parts and the seams between them.
+   - map: decisions made, the frontier and the fog, drawn as a map.
+   - explain: whatever the input describes.
+5. **What changed and why:** short cards, one per change or decision: what, why, link to the source.
+6. **What could go wrong:** risks, edge cases, and anything a review or break-it pass flagged, with how each is handled or why it's accepted. Don't make it sound safer than it is.
+7. **How we know it works:** test and break-it results, ramp numbers, and what is still untested.
+8. **Glossary:** each term used, one plain line each.
+9. **Go deeper:** short code excerpts, full tables, links.
 
-1. **Decision box** (top, impossible to miss): what the reader needs to decide, the recommended choice, and why, in at most three lines. If no decision is needed, say "Nothing to decide, just review."
-2. **In one paragraph:** the story from step 2, in plain language.
-3. **The picture:** at least one diagram showing the real mechanism, not decoration.
-   - pr: data or control flow through the components touched, with changed parts highlighted, and a before/after view if behavior changed.
-   - ramp: levels on a chart against the exit criteria, the point where it breaks, and accuracy drift.
-   - spec: components and the seams between them.
-   - map: decisions made, the frontier, and the fog, shown as a map.
-4. **What changed and why:** a few short cards, one per meaningful change or decision. Each says what it is, why, and links to the source (file, ticket or ADR).
-5. **What could go wrong:** risks, edge cases, and anything the adversary, break-it pass or code review flagged, with how each is handled or why it's accepted. Be honest; don't make it sound safer than it is.
-6. **How we know it works:** test, fixture and break-it results, ramp numbers, and what is still untested.
-7. **Glossary:** each domain or technical term used on the page, in one plain line.
-8. **Go deeper:** collapsible `<details>` sections for anyone who wants detail: key code excerpts (short), full metric tables, links.
+The Think-it-through box must match the facts in the body. It names options only if the body does, and never ranks or favors one.
 
 ## 4. Writing rules
 
-- Plain words. Define each term the first time it appears, or use a simpler one.
+- Words as the reader level says. Define each repo glossary term the first time it appears, using the repo's own definition; the level decides how much else gets defined.
 - Short sentences. One idea per sentence.
-- A concrete example or analogy for every abstract idea.
+- A concrete example for every abstract idea.
 - Lead with what matters. No preamble.
 - Numbers keep their units and context: "4.2 s per tile (was 9.8 s)", not "faster".
+- No "I recommend", "you should", "the best option" or similar. Ask instead.
 
-## 5. Visual rules
+## 5. Output
 
-- **One self-contained HTML file.** Inline CSS and inline SVG. Nothing loaded from the network, so it opens offline and renders the same everywhere.
-- Readable on a phone: a single column, a 16px side margin, and no horizontal scrolling.
-- Works in light and dark mode: define colors as CSS variables on `:root` and redefine them under `prefers-color-scheme: dark`.
-- Use a restrained palette and one highlight color for "changed" or "needs attention". Use color for meaning, not decoration.
-- Every diagram gets a one-line caption saying what to notice.
-- Charts get labeled axes and units. Mark the thresholds and the break point directly on the chart.
+### Chat (a human explanation)
 
-## 6. Output and check
+- Same section order. Think it through comes first.
+- Diagrams are plain-text box-and-arrow drawings in code blocks.
+- Background is short bullets: term, plain definition, everyday example.
+- Go deeper is a list of source links.
+- About one screen: 50 lines or fewer, code blocks included. Keep only the most important card, risk and glossary items to fit. Cut detail before cutting the box or the picture.
+- Not saved anywhere.
 
-- Save to `.lifecycle/human/<cycle>-<mode>-<short-name>.html`. If `.lifecycle/` doesn't exist, use `docs/human/`.
-- **pr mode:** add a link to the page in the PR description.
-- **ramp mode:** link it from `RAMP.md` and from `.lifecycle/STATE.md`.
-- Before finishing, check:
-  - the file has no external URLs in `src` or `href` except links to sources
-  - the HTML is well-formed
-  - every number on the page appears in a source
-  - the decision box matches the recommendation in the body
-  - if a headless browser is available, render the page at phone and desktop widths and look at it
-- Report in two lines: where the page is, and the decision it asks for.
+### HTML page (a human page)
+
+- **One self-contained HTML file.** Inline CSS and inline SVG. Nothing loaded from the network, so it opens offline.
+- Readable on a phone: one column, 16px side margin, no horizontal scrolling.
+- Light and dark mode: colors as CSS variables on `:root`, redefined under `prefers-color-scheme: dark`.
+- A restrained palette with one highlight color for "changed" or "needs attention". Color carries meaning, not decoration.
+- Every diagram gets a one-line caption saying what to notice. Charts get labeled axes, units, and the checks and break point marked on them.
+- Go deeper uses collapsible `<details>` sections.
+- Save to `.lifecycle/human/<cycle>-<mode>-<short-name>.html` if `.lifecycle/` exists, else `docs/human/<mode>-<short-name>.html`.
+- **pr mode:** link the page from the PR description.
+- **ramp mode:** link the page from `RAMP.md` and `.lifecycle/STATE.md`.
+
+## 6. Check before finishing
+
+- Every number appears in a source.
+- The Think-it-through box matches the body, and nothing recommends.
+- HTML only: well-formed; no external URLs in `src` or `href` except links to sources; if a headless browser is available, look at it at phone and desktop widths.
+- Report: for a page, two lines (where it is, and the question it asks). For chat, the explanation is the report.
