@@ -12,6 +12,10 @@ _Avoid_: development skill, workflow skill
 A skill in `productivity/` that serves the person across many projects, not one product.
 _Avoid_: personal skill, utility skill
 
+**Shared skill**:
+A skill both families use that belongs to neither, such as `human`.
+_Avoid_: common skill, core skill
+
 ## Lifecycle
 
 **Destination**:
