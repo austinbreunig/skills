@@ -113,3 +113,7 @@ _Avoid_: summary, recap, re-pitch
 **Reader level**:
 How much the reader already knows (newbie, beginner, proficient or master), which sets the words, background and questions `human` uses.
 _Avoid_: audience, skill level, difficulty
+
+**Think-it-through box**:
+The box at the top of every human page and human explanation: the question in front of the reader and 2–4 guiding questions that point to the sections that help, or "Nothing to decide, just read." It never recommends.
+_Avoid_: decision box, recommendation, TL;DR
