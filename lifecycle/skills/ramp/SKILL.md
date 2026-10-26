@@ -1,94 +1,72 @@
 ---
 name: ramp
-description: Pressure-test a built pipeline: an adversarial break-it pass first, then real data at rising volume and variety, to find where it breaks, revalidate the algorithm, and produce a capacity statement and break list.
+description: Plan how to pressure-test a built pipeline. Charts a wayfinder map whose destination is one spec for a ramp harness. Planning only; nothing is run.
 ---
 
 # Ramp
 
-The pipeline already works. The question now is where it breaks. Attack it in order of cost:
-- **Level 0** finds cheap bugs with synthetic attacks.
-- **Volume** finds performance limits with real data.
-- **Variety** finds edge cases with real data.
+The pipeline works end to end. The next question is where it breaks. This skill plans how to find out. It does not run anything.
 
-Re-check the algorithm at every level, because accuracy can drift as scale grows.
+The output is a **ramp map**: a wayfinder map with three grilling tickets. Walking that map ends in one spec for a **ramp harness**. The harness is then built like any other spec. Running it, and writing `RAMP.md`, is lifecycle's **Run ramp** step, not this skill.
 
-`/code-review` (run inside implement-spec) checks conformance: does the code match the standards and the spec? This skill is the adversarial side: how can the code be broken?
+Walking the map is plain `/wayfinder <map>`. This skill only charts it.
 
-How far a ramp goes depends on the cycle's destination in `.lifecycle/STATE.md`. A POC cycle might ramp to one county; a production cycle ramps to the full target load, with headroom.
+## 1. Check the entry point
 
-Inputs: the integration branch or merged code, the contracts, the golden fixtures, the ADRs, `.lifecycle/STATE.md`.
+A ramp needs something to run. Look for one **entry point**: a single command that takes an input and an output location and runs the whole pipeline. Check the README, the CLI, scripts and the code.
 
-Safety: treat source data as read-only. Write outputs to a scratch location. Never touch production systems unless an ADR explicitly allows it.
+If there is none, stop. Say:
 
-## 1. Instrument first
+> Not ready to ramp: no single entry point that takes an input and an output location and runs the pipeline. Build that first.
 
-Confirm or add, before any ramp run:
-- timing and peak memory for each stage
-- record counts in and out of each stage
-- a **quarantine** output: records that fail go there with a reason, instead of crashing the run
-- cost tracking, if the pipeline runs on paid compute
+Add one line on what is missing (e.g. "stages run one by one", "no output option"). Do nothing else.
 
-## 2. Level 0: break-it pass (synthetic, cheap)
+## 2. Find how far the ramp goes
 
-Spawn one fresh subagent that has seen neither the implementation sessions nor this one. Give it pointers only: the contracts, the code, the golden fixtures and the ADRs. Its brief:
+- **With lifecycle** (`.lifecycle/STATE.md` exists): read the cycle's **Destination**. Don't ask.
+- **Alone** (no `.lifecycle/`): ask "How far should this ramp go?", with one example (e.g. "one county, or the full national load?"). Wait for the answer.
 
-> Your job is to make this code fail. Write tests that you expect to fail, against the contracts:
-> - property-based tests (e.g. Hypothesis) over the contract's input space
-> - boundary cases: empty, single-element, maximum-size and degenerate inputs
-> - malformed inputs: invalid, null and wrongly typed values
-> - domain edge cases. For geospatial work, for example: invalid or self-intersecting geometries, empty geometries, mixed or missing CRS, antimeridian and poles, precision at tile boundaries
-> - operational failures: idempotency (running the same job twice), retries, partial failure mid-run, re-ordering of inputs
->
-> Commit the tests to a `break-it` branch. Report each failing test in at most 300 words: the test, what failed, and your guess at the cause.
+Also check whether the repo already has a ramp harness. If it does, the plan extends it rather than starting over.
 
-Then, for each failure:
-- **Classify** it as performance, data edge case, or algorithm (see section 4).
-- If the fix is small and reversible, call the Skill tool with "tdd" to fix it, keeping the failing test as the red test.
-- Otherwise, log it to the break list.
+## 3. Small ramp? Skip the map
 
-Keep the passing break-it tests as a permanent regression suite. Volume levels start only once level 0 has no unclassified failures.
+If one grilling session could settle all three seed questions below (e.g. one dataset, one or two levels, no new harness parts), ask the user once:
 
-## 3. Baseline, then pre-flight
+> This ramp looks small. Skip the map? We'd do one `/grilling` session on the three questions, then `/to-spec`.
 
-Run the smallest real-data level (about 1% of the destination's target) to get baseline timings and accuracy. Then do the pre-flight, now based on real numbers:
+If yes, list the three questions and stop. Otherwise, chart the map.
 
-1. Read the ADRs, including any earlier cycle's ramp plan.
-2. Draft the ramp plan:
-   - **Levels:** default 1% → 10% → 50% → 100% of the destination's target load. Production destinations add a headroom level, e.g. 150%.
-   - **Exit criteria for each level:** throughput, peak memory, cost, quarantine rate, and the algorithm accuracy metric on the golden fixtures and on a spot-check sample. Base the thresholds on the baseline and the destination.
-   - **Variety strata** to sample at every level, taken from the domain. For geospatial data, for example: dense versus sparse areas, each geometry type, each CRS present, invalid or empty geometries, antimeridian and poles, nulls, very large features.
-3. Flag any criterion that is one-way or low-confidence, e.g. a hard SLA. If anything is flagged, send one short decision sheet; otherwise record the ramp plan as an ADR and continue.
+## 4. Chart the map
 
-## 4. Run the levels
+Find wayfinder's installed `SKILL.md` by name: search `~/.claude/plugins/` for a path ending in `wayfinder/SKILL.md`. If there are several versions, use the newest. Follow its **Chart the map** steps, with these changes:
 
-At each level:
-1. Run the pipeline on a sample stratified across the variety list.
-2. Run the golden fixtures and the break-it suite as regression checks.
-3. Compare the results with the exit criteria.
-4. If every criterion passes, go to the next level.
+1. **Destination is fixed.** Don't grill for it. Use: "One spec issue for the ramp harness of `<pipeline>`, ramping to `<how far>`, ready for `/to-tickets`."
+2. **Frontier is fixed.** Don't run the breadth-first grilling. The frontier is the three seed tickets below.
+3. **Create the map** as wayfinder says. Put in **Notes**: the entry point command, any existing harness, and the plan rules below. Sketch any fog you can already see (e.g. data you don't have yet) in **Not yet specified**.
+4. **Create the three seeds** as child issues of the map, each labelled `wayfinder:grilling`. Then, in a second pass, wire native blocking: 2 is blocked by 1, and 3 is blocked by 2. Use the tracker's native blocking, as wayfinder says. A body note is only for trackers that have none.
+5. **No research step.** The seeds are all grillings.
+6. **Stop.** Charting resolves nothing.
 
-If a criterion fails:
-- **Classify** the failure as one of:
-  - **performance:** slow, out of memory, too costly
-  - **data edge case:** crash or quarantine spike tied to a stratum
-  - **algorithm:** accuracy drifts or fixtures fail
-- **Fix only what blocks the next level.** If the fix is small and reversible, make it on a branch, call the Skill tool with "tdd" for it, re-run the level and continue. Otherwise stop the ramp at this level.
-- Log every failure, fixed or not, in the break list.
+If wayfinder's `SKILL.md` can't be found, don't guess. Print the destination, notes and seeds, and tell the user to run `/wayfinder` with them.
 
-Don't optimize anything that isn't blocking.
+### The three seeds
 
-## 5. Report
+1. **Grilling: ramp levels and the break-it pass.** What levels does this ramp climb (level 1 is the smallest real run, the baseline), and what does the break-it pass attack before level 1?
+2. **Grilling: checks for each level.** Blocked by 1. What number checks and judgment checks does each level need to pass?
+3. **Grilling: what the harness needs beyond running the pipeline.** Blocked by 2. QA scripts, a sample pack for judgment checks, the report, and anything else the checks need.
 
-Write `RAMP.md` for this cycle, and link it from STATE. It contains:
-- **Level 0 result:** the number of break-it tests, the failures found, fixed and logged, and a link to the suite.
-- **Capacity statement:** "Holds to X, slows at Y, breaks at Z because W."
-- A table of levels against criteria.
-- Accuracy drift across the levels.
-- **Break list:** each entry has its class, the evidence, and the open question it raises, written so it can seed the next cycle (as Wayfinder input if the breaks are foggy, or grill-with-docs or to-spec input if they're clear).
-- The fixes applied during the ramp, with links.
+### Plan rules (copy into the map's Notes)
 
-Then invoke `human` in ramp mode on `RAMP.md`, to produce the visual page used at Verdict.
+- The **break-it pass** comes before level 1. Made-up hostile inputs try to make the pipeline fail. Levels are numbered from 1.
+- **Number checks** are relative to level 1. They are absolute only when the destination states a hard limit (e.g. "under 2 hours").
+- **Judgment checks** are the user's call, made by looking at samples. The user gives feedback in ticket comments.
+- A level passes only when both its number checks and its judgment checks pass.
+- The harness lives in the pipeline's own repo and is kept across cycles. Its break-it tests become a permanent regression suite.
+- The harness must give Run ramp what `RAMP.md` holds: the break-it result, a capacity statement ("holds to X, slows at Y, breaks at Z because W"), a levels-vs-checks table, how accuracy changed across levels, a break list, the fixes made, and each judgment call linked to the user's comment.
 
-## 6. Hand-off
+## 5. Hand-off
 
-Update `.lifecycle/STATE.md`: link `RAMP.md` and the ramp page, record appetite spent, and set the next step to Verdict. Report in at most five lines: the level 0 result, the capacity statement, the top three breaks, and appetite spent. Finish with: run `/conductor` for the Verdict.
+- **With lifecycle:** in `.lifecycle/STATE.md`, link the ramp map and set Next to `/wayfinder <map>`.
+- **Alone:** skip STATE.md.
+
+End with a plain report, at most five lines: the entry point, how far the ramp goes, the map link, the three seed tickets, and the next command: `/wayfinder <map>`.
