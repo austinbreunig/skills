@@ -86,11 +86,11 @@ A deep-dive on one connected repo: what's open, why, and what could be next. Sta
 
 **Reads, for that repo only.** These replace step 1's sources:
 
-- HQ folder: the repo's `## owner/name` section of each `eod/YYYY-MM-DD.md` from the last 7 days; the jots in `jots/` from the last 7 days tagged with the repo.
-- Left off: the newest session transcript under `~/.claude/projects/` whose `cwd` is a clone of the repo (its git `origin` is `owner/name`). Read only its `away_summary` record, else its `ai-title`.
+- HQ folder: the repo's `## owner/name` section of each `eod/YYYY-MM-DD.md` from the last 7 days; the jots in `jots/` dated (by file name) in the last 7 days whose `repo:` line is `owner/name`.
+- Left off: the newest session under `~/.claude/projects/` with any record whose `cwd` maps to the repo (`git -C <cwd> rev-parse --git-common-dir`, then that repo's `origin` is `owner/name`, so worktrees count). Use that session's newest `away_summary` record, else its `ai-title`.
 - Live `gh`: open PRs (draft, review state, check status, linked tickets); open tickets with body and latest comments, assignee, blocked-by, last update; tickets closed in the last 7 days; any open `wayfinder:map` issue. The repo's `GLOSSARY.md` and README, via `gh api` if it isn't the current folder.
 
-Never read raw session transcripts beyond that one record.
+No raw transcripts: from session files read only the `cwd`, `away_summary` and `ai-title` fields, never the messages.
 
 **Sections**, in this order (they replace section 3's list):
 
