@@ -1,42 +1,44 @@
 ---
 name: lifecycle
-description: Navigator for a product's whole lifecycle across many fresh sessions: reads state, says the exact next command, runs agent-callable steps, guards appetite and value.
+description: Carries one product through a development cycle across fresh sessions. Works out where the cycle stands, runs every agent step back to back (each in its own subagent), and stops only at decisions only the user can make, with the exact next command.
 ---
 
-# Conductor
+# Lifecycle
 
-The user runs `/conductor` at the start of any fresh session. It means: *where are we, and what's next?* Conductor works out the current position by checking real artifacts against the gates below. Then it does one of two things:
-- runs the next step itself, if that step is agent-callable, or
-- gives the user the exact command to run in a fresh session, and stops.
+The user runs `/lifecycle` at the start of any fresh session. It means: *where are we, and what's next?*
 
-Conductor navigates; it does not override. It never tells another skill *how* to do its work. It decides order, keeps state, tracks appetite, and enforces gates.
+## The rule
 
-## How work moves between sessions
+- A **human step** is a decision only the user can make: the destination, the route, sign-offs, the Verdict, and running the commands lifecycle never wraps.
+- Everything else is an **agent step**.
 
-Every step runs in a fresh session. Nothing carries over in conversation. Each decision lives in exactly one place, and everything else links to it:
-- **Wayfinder decisions:** their tickets (the map is only an index)
+One run chains agent steps, each in its own subagent, until it reaches a human step or a step fails. Then it replies (see **Replying**) and stops.
+
+Lifecycle navigates; it does not override. It decides order, keeps state and checks gates. It never tells another skill *how* to do its work, and never wraps `wayfinder`, `grill-with-docs` or `implement-spec`: those are always the user's to run.
+
+## Where decisions live
+
+Nothing carries over in conversation. Each decision lives in one place, and everything else links to it:
+- **The cycle's build plan:** the spec issue (with its tickets, seams and mindful's cuts)
 - **Build-time decisions:** ADRs, wherever `setup-matt-pocock-skills` configured them
-- **The cycle's build plan:** the spec issue
-- **Conductor's memory:** `.lifecycle/STATE.md`, which holds pointers only
-
-If a session overflows partway through a step, the user can run `/handoff`. Conductor never tries to do more than one step per session.
+- **Lifecycle's memory:** `.lifecycle/STATE.md`, pointers only
 
 ## Markers
 
-Every step leaves something you can see. Pocock's skills already leave artifacts: a map, a spec, tickets, a PR. Conductor's own steps, plus the ones that leave no distinct artifact, get a **label on the cycle's spec issue**:
+Every step leaves something you can see: a spec, tickets, a PR, a comment, a page, or a **label on the cycle's spec issue**:
 
-- `lifecycle:simplified`: wu-wei has run on the spec
-- `lifecycle:seams-locked`: contracts, stubs and fixtures are committed, the tickets are amended, and the adversary pass is closed
-- `lifecycle:explained`: the PR's human page exists and is linked
-- `lifecycle:reviewed`: the user confirmed they reviewed the PR page
-- `lifecycle:ramped`: the ramp report and its page exist
+- `lifecycle:simplified`: mindful has reviewed the spec (mindful adds it)
+- `lifecycle:seams-locked`: contracts, stubs and fixtures are committed, the tickets have Seams sections, and the adversary pass is closed
+- `lifecycle:spec-signed-off`: the user signed off the spec, its tickets, seams and mindful's cuts
+- `lifecycle:explained`: the PR's human page exists and the PR description links it
+- `lifecycle:reviewed`: the user signed off the PR
 - `lifecycle:verdict-<ship|continue|reshape|kill>`: the verdict is recorded
 
 Rules:
-- **A label means checked, not just ran.** Conductor adds a label only after confirming the step's outputs directly (the checks in the table below), whoever ran the step.
-- If the outputs exist but the label is missing (the step was run by hand), confirm them and add the label.
-- If a label exists but its outputs are missing or broken, remove the label, tell the user in one line, and redo the step.
-- Express labels however the repo's tracker doc defines them. If the tracker has no labels (e.g. local markdown), keep a `Lifecycle:` line in the spec's body listing the markers.
+- **A label means checked, not just ran.** Add a label only after checking the step's outputs directly (the gates below), whoever ran the step.
+- Outputs exist but the label is missing (the step was run by hand): check them and add the label.
+- A label exists but its outputs are missing or broken: remove it, say so in one line, and redo the step.
+- Create a label first if the repo lacks it. If the tracker has no labels (e.g. local markdown), keep a `Lifecycle:` line in the spec's body listing the markers.
 - The spec is per cycle, so the markers reset each cycle on their own.
 
 ## STATE.md (a cache, under ~80 lines; link, never paste)
@@ -46,19 +48,19 @@ Rules:
 One line: what this is and who it serves.
 
 ## Lifecycle
-One line per finished cycle: N, destination, verdict, touches, default hit rate, appetite accuracy, links to the ramp report and retro.
+One line per finished cycle: N, destination, verdict, touches, default hit rate, links to the human pages and retro.
 
 ## Current cycle
 Cycle: N
 Destination: e.g. "POC proving the change-detection algorithm on one county"
-Appetite: budget, and how much has been spent
-Route: foggy | clear
-Map / Spec: links
+Route: map | grill
+Ramp: yes | no
+Spec: link
 Step: the current step
 Next: the exact command or action
-Touches: a count of each time the user had to act, with the kind
-Links: tickets, contracts, integration branch, human pages, ramp report
-Open one-way decisions: the list, or none
+Touches: count of human steps so far, with the kind of each
+Links: tickets, contracts, integration branch, PR, human pages
+Open questions: on the spec, or none
 Value check: one line, updated at every step
 ```
 
@@ -66,80 +68,140 @@ STATE is a cache. When it disagrees with the tracker or the repo, the artifacts 
 
 ## Starting a cycle
 
-- **First run, or after a Verdict of Continue or Re-shape:** ask the user, in one message, for the cycle's **destination** and **appetite**.
-- Destinations get more demanding as the product matures (inception POC → MVP → hardened production → scale). They are chosen each cycle at Verdict, never set as a fixed phase sequence.
-- Decide the **route**:
-  - **Foggy:** the destination can be named but the way there can't be seen, or the work spans many sessions → start with Wayfinder.
-  - **Clear:** the work fits in one session of deciding → start with grill-with-docs.
-  - When unsure, say which you'd pick and why in one line, and let the user overrule.
+On the first run (no `.lifecycle/STATE.md`), or after a Verdict of Continue or Re-shape, ask in **one message** for whatever isn't already known:
+
+1. **Destination:** what this cycle aims to reach. Destinations get more demanding as the product matures (POC → MVP → hardened production → scale); they are chosen each cycle, never a fixed sequence.
+2. **Route:**
+   - **map:** the way to the destination can't be seen yet, or the work spans many sessions of deciding.
+   - **grill:** the work fits in one session of deciding.
+   Say which you'd pick and why in one line; the user decides.
+3. **Ramp:** does this cycle need a ramp (a planned pressure test of the pipeline)? Yes or no. No default.
+
+Skip any question already answered: by STATE, by the verdict ADR, or by the user's own message. On Continue or Re-shape, keep answers that still hold and ask only the rest.
+
+Write the answers to STATE and count one touch. The user can change **Ramp** until the cycle's spec exists; after that it is fixed.
+
+On the first cycle, also make the **interaction-load hooks** offer (below).
 
 ## Finding the next step
 
 On every run:
-1. Read STATE to find the current cycle's map and spec.
-2. Go down the table in order. For each step, check its gate against the real artifacts: tracker queries, labels, branches, files.
-3. The **first step whose gate is not met** is the next step. Any earlier step with outputs but a missing marker gets checked and labelled on the way.
+1. Read STATE to find the current cycle and its spec.
+2. Go down the table in order. For each step, check its gate against the real artifacts: issues, labels, comments, branches, files.
+3. Any step with outputs but a missing marker gets checked and labelled on the way.
+4. The **first step whose gate is not met** is the next step. If it is an agent step, run it (see **Running agent steps**) and go on to the next. If it is a human step, reply and stop.
 
-| Step | Runs it | Gate: done when (and how to check it) |
-|---|---|---|
-| 1. Chart (foggy) | User: `/wayfinder <idea + destination>` | A `wayfinder:map` issue for this cycle exists, with a Destination |
-| 2. Walk the map (foggy) | User, one ticket per fresh session: `/wayfinder <map>` | The map has no open child tickets |
-| 1′. Grill (clear) | User: `/grill-with-docs`, then `/to-spec` in the same session | (covered by step 3) |
-| 3. Spec | User: `/to-spec <map>` | A spec issue exists that is linked to this cycle's map, or created after the grill session; record its link in STATE |
-| 4. Simplify | User: `/wu-wei <spec>` | Label `lifecycle:simplified` (wu-wei adds it; see below) |
-| 5. Slice | User: `/to-tickets <spec>` | Implementation tickets referencing the spec exist, with blocking edges |
-| 6. Lock seams | Conductor: invoke `seam-lock` | Check the contracts and fixtures are committed and the harness runs; every ticket has a Seams section; the adversary findings are closed or recorded as ADRs → label `lifecycle:seams-locked` |
-| 7. Build | User: `/implement-spec <spec>` | The integration-branch PR is open and every implementation ticket is closed |
-| 8. Explain | Conductor: invoke `human` in pr mode | Check the page file exists and the PR description links it → label `lifecycle:explained` |
-| 9. Review | Conductor asks the user: "Reviewed the PR page? Anything to change?" | When the user confirms → label `lifecycle:reviewed`. If they ask for changes, record them as tickets and go back to step 7 |
-| 10. Ramp | Conductor: invoke `ramp` | Check `RAMP.md` has a level 0 (break-it) result, a capacity statement and a break list, and the ramp page exists → label `lifecycle:ramped` |
-| 11. Verdict | Conductor, with the user | A verdict ADR exists → label `lifecycle:verdict-<choice>` |
-| 12. Retro | Conductor: invoke `cycle-retro` | `.lifecycle/CYCLE-RETRO-N.md` exists → the cycle is closed; start the next one, or stop if the verdict was Ship or Kill |
+### Grill route
 
-**The wu-wei marker:** wu-wei is the user's own skill and leaves no distinct artifact. On the first cycle, if step 4 has no marker, tell the user to add one line to the end of their wu-wei skill: "When finished, add the label `lifecycle:simplified` to the spec issue (or append it to the spec's `Lifecycle:` line)." Until they do, ask once after step 4 ("Has wu-wei run on the spec?") and add the label yourself on a yes.
+| # | Step | Kind | Gate: done when |
+|---|---|---|---|
+| G1 | Grill and spec | human: `/grill-with-docs`, then `/to-spec` in the same session | A spec issue created after this cycle started exists; record its link in STATE |
 
-The user can open the map or spec in `human` (map or spec mode) at any time, to see where things stand.
+Then the spec chain.
+
+### Spec chain
+
+| # | Step | Kind | Gate: done when |
+|---|---|---|---|
+| S1 | Mindful review of the spec | agent: `lifecycle:mindful <spec>` | Label `lifecycle:simplified` and a `## Mindful review` comment on the spec |
+| S2 | Tickets | agent: to-tickets worker (below) | Implementation tickets that reference the spec exist, with blocking edges |
+| S3 | Lock seams | agent: `lifecycle:seam-lock <spec>`. Skipped for the ramp harness spec | Contracts and fixtures committed and the harness runs; every ticket has a Seams section; adversary findings fixed or written on the spec as open questions → label `lifecycle:seams-locked` |
+| S4 | Mindful on tickets and seams | agent: `lifecycle:mindful <spec's tickets and seams>` | A `## Mindful review` comment on the spec newer than S3's (or S2's, when S3 was skipped) |
+| S5 | Spec page | agent: `human:human spec <spec>` | The spec page exists in `.lifecycle/human/` and is newer than S4's comment |
+| S6 | **Spec sign-off** | human (see **Sign-offs**) | Label `lifecycle:spec-signed-off` |
+
+### Build chain
+
+| # | Step | Kind | Gate: done when |
+|---|---|---|---|
+| B1 | Build | human: `/implement-spec <spec>`, in a fresh session | The integration-branch PR is open and every implementation ticket is closed |
+| B2 | Mindful on the branch | agent: `lifecycle:mindful <branch>` | A `## Mindful review` comment on the PR newer than the last ticket closed |
+| B3 | Simplify | agent: `/simplify` on the branch; the worker ends by posting a `## Simplify pass` comment on the PR listing its commits (or "nothing to change") | That comment exists, newer than B2's |
+| B4 | PR description | agent: `mattpocock-skills:pr`, rewriting the PR's description | (covered by B5: rerun B4 whenever B5 runs) |
+| B5 | PR page | agent: `human:human pr <PR>` | The page exists and the PR description links it → label `lifecycle:explained` |
+| B6 | **PR sign-off** | human (see **Sign-offs**) | Label `lifecycle:reviewed` |
+
+Then the Verdict (human) and the Retro.
+
+**Not in this skill yet:** the map route's steps and the ramp steps. Until they are added, on the map route tell the user to chart and walk the map with `/wayfinder`, then write the spec with `/to-spec <map>`, then run `/lifecycle`; the spec chain starts from there. A cycle with Ramp: yes goes from PR sign-off straight to the Verdict.
+
+## Running agent steps
+
+Run each agent step in its own fresh subagent. Give it pointers only: the skill to follow (by full name), the target (spec, tickets, branch or PR), and this line:
+
+> This is an agent step in a lifecycle run. Don't stop to ask. Write anything the user must decide on the spec issue as an open question; it is reviewed at spec sign-off.
+
+When the subagent returns, check the step's gate yourself. Gate met → add its marker, update STATE (`Step`, `Links`, `Value check`), and go on. Gate not met → that is a failure: stop and reply.
+
+### to-spec and to-tickets workers
+
+Pocock's `to-spec` and `to-tickets` can't be called as skills by an agent. A worker follows their files instead:
+
+1. Find the installed `mattpocock-skills` plugin's `SKILL.md` by skill name, not by version folder: search `~/.claude/plugins/` for paths that contain `mattpocock-skills` and end in `/to-tickets/SKILL.md` (or `/to-spec/SKILL.md`). If there are several, use the one most recently modified.
+2. Follow it, with one change: every step that checks with the user ("check the seams with the user", "Quiz the user", "iterate until the user approves") becomes "this is reviewed at spec sign-off". Publish without waiting.
+3. Not found: stop and reply with the command for the user to run themselves, e.g.:
+
+   ```
+   /to-tickets <spec> publish, approval is at sign-off
+   ```
+
+   then `/lifecycle` again. Count it as a touch.
+
+## Sign-offs
+
+### Spec sign-off
+
+Reply with the spec page's path, the open questions on the spec (if any), and the two ways forward:
+- **Sign off:** `/lifecycle signed off`. This covers the spec, its tickets, its seams and mindful's cuts. Add `lifecycle:spec-signed-off`.
+- **Push back:** comment on the spec issue with what to change (any of mindful's cuts can be undone this way), then `/lifecycle`.
+
+**Push back.** On every run before spec sign-off, look for the user's comments on the spec issue that are newer than the spec page and have no `## Lifecycle revision` reply. For each:
+1. Make the change: edit the spec, tickets or seams, or restore a cut as its Undo line says.
+2. Find the first step the change affects: the spec's scope or stories → S1; how the work is sliced → S2; contracts, fixtures or conventions → S3; restoring a cut → S4.
+3. Remove the markers of that step and every later one, then rerun the chain from there.
+4. Reply on the spec issue with a `## Lifecycle revision` comment: what changed, and the step the chain reran from.
+
+### PR sign-off
+
+Reply with the PR page's path and the two ways forward:
+- **Sign off:** `/lifecycle reviewed`. Add `lifecycle:reviewed`.
+- **Ask for changes:** list them in the `/lifecycle` message or as PR comments. Each change becomes a ticket that references the spec. Remove `lifecycle:explained`, then reply with `/implement-spec <spec>` (clear the session first). After the build, the build chain runs again from B2.
 
 ## Replying
 
-When the next step is the user's, reply with only:
-1. where things stand, in one line
+When a run stops, reply with only:
+1. where things stand, in one line (and what failed, if a step failed)
 2. the exact command, in a code block
-3. "Clear the session first" whenever that step needs a fresh one
+3. "Clear the session first" whenever that step needs a fresh one (`/grill-with-docs`, `/implement-spec`, `/wayfinder`)
 
-Then update STATE's `Next` line, increment `Touches`, and stop.
-
-When the next step is conductor's, run it, check its gate, add the marker, update STATE, and then give the next command the same way.
-
-## Interaction-load hooks (configure, don't override)
-
-On the first cycle, offer once to add these standing preferences to the Wayfinder map's **Notes** and to the project's `CLAUDE.md`:
-- "Ask grilling questions as a short decision sheet: each question in at most two lines, with a proposed default; the user edits only what's wrong."
-- "Prototype choices belong to the user. Never pick a variant and close the ticket."
-
-Only add them if the user agrees. Don't edit other skills' files. Later changes to these hooks come through `cycle-retro`.
-
-## Circuit breaker
-
-Update the appetite spent at every step. If spent exceeds appetite, or a step is clearly heading past it, stop routing and go to Verdict. Never extend the appetite silently.
+Then set STATE's `Next` line. If the stop is a human step, add one to `Touches` with its kind.
 
 ## Value check
 
-At every step, write one line into STATE: *is this cycle still on track to reach its destination within its appetite, and is that destination still worth reaching?* If the answer is no, tell the user now, not at Verdict.
+At every step, write one line into STATE: *is this cycle still on track to reach its destination, and is that destination still worth reaching?* If the answer is no, stop and tell the user now, not at the Verdict.
+
+## Interaction-load hooks (configure, don't override)
+
+On the first cycle, offer once to add these standing preferences to the project's `CLAUDE.md` (and the map's **Notes**, on the map route):
+- "Ask grilling questions as a short decision sheet: each question in at most two lines, with a proposed default; the user edits only what's wrong."
+- "Prototype choices belong to the user. Never pick a variant and close the ticket."
+
+Only add them if the user agrees. Don't edit other skills' files. Later changes come through `cycle-retro`.
 
 ## Verdict
 
-Open the ramp's `human` page and summarize it briefly:
+After PR sign-off, summarize briefly from the human pages:
 - the destination versus what was delivered
-- appetite spent
-- the ramp capacity statement and the top breaks
+- what is still untested or broken
 
 Ask for one choice:
 - **Ship:** this destination is good enough to release
-- **Continue:** the next cycle's destination is the next level of maturity, starting from the break list
-- **Re-shape:** same goal, new approach or appetite
+- **Continue:** the next cycle aims at the next level of maturity
+- **Re-shape:** same goal, new approach
 - **Kill**
 
-Record the verdict as an ADR, add the verdict label, and add the cycle to Lifecycle in STATE. Then invoke `cycle-retro`.
+Record the verdict as an ADR, add the verdict label, and add the cycle to Lifecycle in STATE.
 
-For the next cycle's route: if the break list is foggy, the user charts a new Wayfinder map from it (`/wayfinder` with the break list as input). If it is clear, go straight to grill-with-docs or to-spec.
+## Retro
+
+Run `lifecycle:cycle-retro` in this session (it asks the user which edits to apply). The cycle is closed once `.lifecycle/CYCLE-RETRO-N.md` exists. Then start the next cycle, or stop if the verdict was Ship or Kill.
