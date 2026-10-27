@@ -1,81 +1,59 @@
-Review set · 5 skills
-
 # Lifecycle Skills
 
-A thin layer around Matt Pocock's skills that carries an idea from inception POC to production, one fresh session at a time. Conductor navigates, the four helpers do the work Pocock's skills don't cover, and every step leaves a marker conductor can check.
+A thin layer around Matt Pocock's skills that carries a product from idea to production, one fresh session at a time. `/lifecycle` navigates. The other skills do the work Pocock's skills don't cover. Every step leaves a marker that `/lifecycle` can check.
 
-[conductor](#conductor) [seam-lock](#seam-lock) [ramp](#ramp) [human](#human) [cycle-retro](#cycle-retro)
+Each skill's `SKILL.md` is the source of truth. This page shows how they fit; it doesn't restate them.
+
+| Skill | Job |
+|---|---|
+| [lifecycle](../lifecycle/skills/lifecycle/SKILL.md) | Navigator. Run it at the start of every fresh session. |
+| [mindful](../lifecycle/skills/mindful/SKILL.md) | Cuts forced or unneeded complexity from the shape of the work. |
+| [seam-lock](../lifecycle/skills/seam-lock/SKILL.md) | Commits contracts, stubs and fixtures, then attacks the split. |
+| [ramp](../lifecycle/skills/ramp/SKILL.md) | Plans how to pressure-test a built pipeline. |
+| [cycle-retro](../lifecycle/skills/cycle-retro/SKILL.md) | Measures the cycle and proposes workflow edits. |
+| [human](../human/skills/human/SKILL.md) | Turns specs, PRs, maps and ramp reports into pages a person can decide from. |
 
 ## One cycle
 
-Clear the session, run `/conductor`, run the command it gives you. Repeat.
+Clear the session, run `/lifecycle`, do what it asks. Repeat.
 
-You type it or decideConductor runs it
+A **human step** is a decision only you can make. Everything else is an **agent step**: `/lifecycle` runs those back to back, each in its own subagent, and stops at the next human step.
 
-1. YouChart the map`/wayfinder`Foggy route only
-2. YouWalk the map, one ticket per session`/wayfinder <map>`Foggy route only
-3. YouGrill`/grill-with-docs`Clear route only
-4. YouWrite the spec`/to-spec`
-5. YouSimplify`/wu-wei`lifecycle:simplified
-6. YouSlice into tickets`/to-tickets`
-7. ConductorLock the seams`seam-lock`lifecycle:seams-locked
-8. YouBuild in parallel`/implement-spec`Runs /code-review inside
-9. ConductorExplain the PR`human · pr`lifecycle:explained
-10. YouReview the page`conductor asks`lifecycle:reviewed
-11. ConductorRamp`ramp`lifecycle:ramped
-12. YouVerdict`conductor asks`lifecycle:verdict-\*
-13. ConductorRetro`cycle-retro`Proposes edits
+```
+Start      you:   destination, route (map or grill), ramp yes/no
+
+Route      map:   you /wayfinder the main map (+ tracer map if ramp)
+                  agent blocks tracer tickets on main tickets
+                  you walk the maps, then /to-spec
+           grill: you /grill-with-docs, then /to-spec
+
+Spec chain agent: mindful review          -> lifecycle:simplified
+           agent: to-tickets
+           agent: seam-lock               -> lifecycle:seams-locked
+           agent: mindful on tickets + seams
+           agent: human spec page
+           you:   spec sign-off           -> lifecycle:spec-signed-off
+
+Build      you:   /implement-spec
+           agent: mindful on the branch
+           agent: /simplify
+           agent: pr description
+           agent: human PR page           -> lifecycle:explained
+           you:   PR sign-off             -> lifecycle:reviewed
+
+Ramp tail  agent: ramp charts the ramp map (after the tracer is built)
+(ramp yes) you:   walk the ramp map, then /to-spec
+           (harness spec runs the spec and build chains, no seam-lock)
+           agent: run ramp, write RAMP.md
+           agent: human ramp page         -> lifecycle:ramped
+
+Close      you:   Verdict (ship, continue, re-shape, kill)
+                                          -> lifecycle:verdict-*
+           agent: cycle-retro
+```
+
+To push back on a spec, comment on the spec issue; the chain reruns from the first step your change affects. To ask for PR changes, each change becomes a ticket and you run `/implement-spec` again.
 
 After the Verdict, Continue or Re-shape starts the next cycle with a more demanding destination, seeded by the ramp's break list.
 
-Skill · 145 lines
-
-## `conductor`
-
-Navigator. Run it at the start of every fresh session.
-
-Trigger descriptionNavigator for a product's whole lifecycle across many fresh sessions: reads state, says the exact next command, runs agent-callable steps, guards appetite and value.
-
-Read the full SKILL.md
-
-Skill · 64 lines
-
-## `seam-lock`
-
-Commits contracts, stubs and fixtures, then attacks the split.
-
-Trigger descriptionAfter to-tickets and before implement-spec: commit contracts, stubs and golden fixtures, amend the tickets to point at them, and run an adversarial review of the split.
-
-Read the full SKILL.md
-
-Skill · 94 lines
-
-## `ramp`
-
-Break-it pass, then real data at rising volume and variety.
-
-Trigger descriptionPressure-test a built pipeline: an adversarial break-it pass first, then real data at rising volume and variety, to find where it breaks, revalidate the algorithm, and produce a capacity statement and break list.
-
-Read the full SKILL.md
-
-Skill · 82 lines
-
-## `human`
-
-Turns machine artifacts into a page you can decide from.
-
-Trigger descriptionTurn a machine artifact (PR, ramp report, spec, or Wayfinder map) into a beginner-friendly, highly visual, self-contained HTML page a person can understand and decide from.
-
-Read the full SKILL.md
-
-Skill · 55 lines
-
-## `cycle-retro`
-
-Measures the cycle and proposes edits to the workflow.
-
-Trigger descriptionRetrospective on a whole development cycle across sessions: find where the workflow wasted interaction, defaults were wrong, or decisions reversed, and propose concrete skill and steering edits.
-
-Read the full SKILL.md
-
-Install by copying each folder into your skills directory, then add the one marker line to the end of your wu-wei skill.
+The full step tables, gates and markers are in [lifecycle's SKILL.md](../lifecycle/skills/lifecycle/SKILL.md).
