@@ -108,6 +108,10 @@ _Avoid_: note, memo
 The day's record in the HQ repo: per connected repo, what the sessions covered, issue activity and action items.
 _Avoid_: EOD report, daily log, recap
 
+**Action item**:
+A loose end from the day's sessions that isn't already an open issue. EOD lists it in the compilation and never turns it into an issue; the user decides.
+_Avoid_: todo, follow-up, task
+
 **Brief**:
 An at-a-glance view of every connected repo: what was done last time and where things stand now. Shown on its own, and at the end of every EOD.
 _Avoid_: morning brief, status report, standup
