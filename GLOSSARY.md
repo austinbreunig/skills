@@ -18,6 +18,14 @@ _Avoid_: common skill, core skill
 
 ## Lifecycle
 
+**Human step**:
+A decision only the user can make, such as the destination, a sign-off or the Verdict. `/lifecycle` stops only at these, and each one counts as a touch.
+_Avoid_: user step, approval gate, checkpoint
+
+**Agent step**:
+Any step that isn't a human step. `/lifecycle` runs these back to back, each in its own subagent, until it reaches a human step or a step fails.
+_Avoid_: automatic step, auto step
+
 **Destination**:
 What one cycle aims to reach, anywhere from a POC exploration to a deployed final product.
 _Avoid_: scope, goal, phase
