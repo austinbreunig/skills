@@ -7,7 +7,7 @@ description: Plan how to pressure-test a built pipeline. Charts a wayfinder map 
 
 The pipeline works end to end. The next question is where it breaks. This skill plans how to find out. It does not run anything.
 
-The output is a **ramp map**: a wayfinder map with three grilling tickets. Walking that map ends in one spec for a **ramp harness**. The harness is then built like any other spec. Running it, and writing `RAMP.md`, is lifecycle's **Run ramp** step, not this skill.
+The output is a **ramp map**: a wayfinder map with three grilling tickets. Walking that map ends in one spec for a **ramp harness**. The harness is then built like any other spec. Running it, and writing `RAMP.md`, is `lifecycle:lifecycle`'s **Run ramp** step, not this skill.
 
 Walking the map is plain `/wayfinder <map>`. This skill only charts it.
 
@@ -24,7 +24,7 @@ Add one line on what is missing (e.g. "stages run one by one", "no output option
 ## 2. Find how far the ramp goes
 
 - **With lifecycle** (`.lifecycle/STATE.md` exists): read the cycle's **Destination**. Don't ask.
-- **Alone** (no `.lifecycle/`): ask "How far should this ramp go?", with one example (e.g. "one county, or the full national load?"). Wait for the answer.
+- **Alone** (no `.lifecycle/`): ask "How far should this ramp go?", with one example (e.g. "one sample file, or the full production load?"). Wait for the answer.
 
 Also check whether the repo already has a ramp harness. If it does, the plan extends it rather than starting over.
 
@@ -38,7 +38,7 @@ If yes, list the three questions and stop. Otherwise, chart the map.
 
 ## 4. Chart the map
 
-Find wayfinder's installed `SKILL.md` by name: search `~/.claude/plugins/` for a path ending in `wayfinder/SKILL.md`. If there are several versions, use the newest. Follow its **Chart the map** steps, with these changes:
+Find wayfinder's installed `SKILL.md` as `lifecycle:lifecycle` says (**to-spec and to-tickets workers**, step 1). Follow its **Chart the map** steps, with these changes:
 
 1. **Destination is fixed.** Don't grill for it. Use: "One spec issue for the ramp harness of `<pipeline>`, ramping to `<how far>`, ready for `/to-tickets`."
 2. **Frontier is fixed.** Don't run the breadth-first grilling. The frontier is the three seed tickets below.
@@ -62,7 +62,7 @@ If wayfinder's `SKILL.md` can't be found, don't guess. Print the destination, no
 - **Judgment checks** are the user's call, made by looking at samples. The user gives feedback in ticket comments.
 - A level passes only when both its number checks and its judgment checks pass.
 - The harness lives in the pipeline's own repo and is kept across cycles. Its break-it tests become a permanent regression suite.
-- The harness must give Run ramp what `RAMP.md` holds: the break-it result, a capacity statement ("holds to X, slows at Y, breaks at Z because W"), a levels-vs-checks table, how accuracy changed across levels, a break list, the fixes made, and each judgment call linked to the user's comment.
+- The harness must give Run ramp every section `RAMP.md` holds (listed in `lifecycle:lifecycle`'s **Run ramp**, step 5).
 
 ## 5. Hand-off
 

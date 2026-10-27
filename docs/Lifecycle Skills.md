@@ -20,40 +20,13 @@ Clear the session, run `/lifecycle`, do what it asks. Repeat.
 A **human step** is a decision only you can make. Everything else is an **agent step**: `/lifecycle` runs those back to back, each in its own subagent, and stops at the next human step.
 
 ```
-Start      you:   destination, route (map or grill), ramp yes/no
-
-Route      map:   you /wayfinder the main map (+ tracer map if ramp)
-                  agent blocks tracer tickets on main tickets
-                  you walk the maps, then /to-spec
-           grill: you /grill-with-docs, then /to-spec
-
-Spec chain agent: mindful review          -> lifecycle:simplified
-           agent: to-tickets
-           agent: seam-lock               -> lifecycle:seams-locked
-           agent: mindful on tickets + seams
-           agent: human spec page
-           you:   spec sign-off           -> lifecycle:spec-signed-off
-
-Build      you:   /implement-spec
-           agent: mindful on the branch
-           agent: /simplify
-           agent: pr description
-           agent: human PR page           -> lifecycle:explained
-           you:   PR sign-off             -> lifecycle:reviewed
-
-Ramp tail  agent: ramp charts the ramp map (after the tracer is built)
-(ramp yes) you:   walk the ramp map, then /to-spec
-           (harness spec runs the spec and build chains, no seam-lock)
-           agent: run ramp, write RAMP.md
-           agent: human ramp page         -> lifecycle:ramped
-
-Close      you:   Verdict (ship, continue, re-shape, kill)
-                                          -> lifecycle:verdict-*
-           agent: cycle-retro
+Start -> Route (map or grill) -> Spec chain -> Build chain -> Ramp tail (ramp: yes) -> Verdict -> Retro
 ```
+
+You set the start, walk the route, sign off each spec and PR, and make the Verdict. The Retro runs in your session and asks which edits to apply.
 
 To push back on a spec, comment on the spec issue; the chain reruns from the first step your change affects. To ask for PR changes, each change becomes a ticket and you run `/implement-spec` again.
 
-After the Verdict, Continue or Re-shape starts the next cycle with a more demanding destination, seeded by the ramp's break list.
+After the Verdict, Continue starts the next cycle with a more demanding destination. Re-shape keeps the goal and tries a new approach.
 
 The full step tables, gates and markers are in [lifecycle's SKILL.md](../lifecycle/skills/lifecycle/SKILL.md).
