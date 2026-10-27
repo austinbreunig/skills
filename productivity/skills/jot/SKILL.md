@@ -1,13 +1,13 @@
 ---
 name: jot
-description: Save a short note about this session to the HQ repo (`/jot <text>`, `/jot --repo owner/x <text>`), or list current jots (`/jot`).
+description: Save a jot about this session to the HQ repo (`/jot <text>`, `/jot --repo owner/x <text>`), or list current jots (`/jot`).
 ---
 
 # Jot
 
-A jot is a very short note the agent writes from what the user says mid-session. It lives in the HQ repo's `jots/` folder, one file per jot. Brief and eod show jots for 7 days; eod deletes older ones. There is no manual remove.
+A jot is a very short note the agent writes from what the user says mid-session. It lives in the HQ repo's `jots/` folder, one file per jot. A jot is **current** while its file-name date is at most 7 days before today. `productivity:brief`, `productivity:eod` and `human:human` show only current jots, and `productivity:eod` deletes the rest. There is no manual remove.
 
-Follow the "Rules for every hq skill" section of the hq skill's `SKILL.md` (config, sync, gh). Find the HQ folder as in its **Find HQ** step.
+Follow the "Rules for every hq skill" section of `productivity:hq` (config, sync, gh). Find the HQ folder as in its **Find HQ** step.
 
 Pick the branch from the argument:
 
@@ -39,7 +39,7 @@ Never write anything in the current project folder.
 
 ## List
 
-Read every file in `jots/`. Show them oldest date first, and by time within a date:
+Read every current jot in `jots/`. Show them oldest date first, and by time within a date:
 
 ```
 - 2026-10-22

@@ -7,7 +7,7 @@ description: Show where every connected repo stands, most recently active first.
 
 The brief is the one report of where every connected repo stands. `/brief` shows it on its own, and `/eod` shows it at the end of every run, built on the EOD compilation it just wrote.
 
-Follow the "Rules for every hq skill" section of the hq skill's `SKILL.md` (config, gh). Find the HQ folder as in its **Find HQ** step.
+Follow the "Rules for every hq skill" section of `productivity:hq` (config, gh, transcripts). Find the HQ folder as in its **Find HQ** step.
 
 **Read-only.** The only change brief makes is `git pull` in the HQ folder. It never writes, commits or pushes anything, in the HQ repo or in any project repo.
 
@@ -19,7 +19,12 @@ Read `repos.txt`. If it lists no repos, say "No connected repos yet. Run /hq add
 
 For each connected repo, gather:
 
-- **Left off.** Look at the top-level `.jsonl` session files under `~/.claude/projects/*/`, newest modified first. Skip subagent files (anything in a `subagents/` folder). For each file, take the `cwd` values of its records and turn each into `owner/name`: `git -C <cwd> rev-parse --git-common-dir`, then that repo's `git remote get-url origin`, parsed as in hq's **Add** step 1. Worktrees count. Ignore records outside git, and git errors on deleted folders. The first file that maps to the repo is its newest session, even if it is after the last EOD. From that file use the newest record with `"subtype":"away_summary"` (its `content`), else the newest `"type":"ai-title"` record (its `aiTitle`). Keep the timestamp of the file's newest record. Read only the `cwd`, `timestamp`, `away_summary` and `ai-title` fields, never the messages. Ignore record types you don't know. No subagent. Stop scanning once every connected repo has a session.
+- **Left off.** Read transcripts by `productivity:hq`'s transcript rule:
+  - Go through the files newest modified first. The first file with a record that maps to the repo is its newest session, even if it is after the last EOD.
+  - From that file, use the newest `"subtype":"away_summary"` record (its `content`), else the newest `"type":"ai-title"` record (its `aiTitle`).
+  - Keep the timestamp of that file's newest record.
+  - Read only `type`, `subtype`, `uuid`, `cwd`, `timestamp`, `content` (of `away_summary` records) and `aiTitle`. Never the messages.
+  - No subagent. Stop once every connected repo has a session.
 - **Last time.** The repo's section in the latest compilation (its `## owner/name` heading through to the next `## ` heading), copied verbatim.
 - **Open PRs.** `gh pr list -R <repo> --state open --json number,title,url,isDraft,reviewDecision,statusCheckRollup,updatedAt`.
 - **Open tickets.** All open issues with their assignees, native blockers and last update, through `gh api graphql`:
@@ -29,8 +34,8 @@ For each connected repo, gather:
       assignees(first:5){nodes{login}}
       blockedBy(first:10){nodes{state}}}}}}
   ```
-- **Closed since the last EOD.** Issues and PRs closed or merged in that window: `gh issue list -R <repo> --state closed --search "closed:>=<YYYY-MM-DD>" --json number,title,url,comments` and `gh pr list -R <repo> --state all --search "closed:>=<YYYY-MM-DD>" --json number,title,url,state,body,comments`.
-- **Jots.** Files in `jots/` dated (by file name) in the last 7 days whose `repo:` line is the repo (ignore case). Jots tagged `General` go to the General section.
+- **Closed since the last EOD.** Issues and PRs closed or merged in that window: `gh issue list -R <repo> --state closed --search "closed:>=<YYYY-MM-DD>" --json number,title,url,comments` and `gh pr list -R <repo> --state all --search "closed:>=<YYYY-MM-DD>" --json number,title,url,state,body,comments`. For each PR, also read its review comments: `gh api repos/<repo>/pulls/<number>/comments`.
+- **Jots.** Current jots (see `productivity:jot`) whose `repo:` line is the repo (ignore case). Jots tagged `General` go to the General section.
 
 ## 2. Order
 
@@ -77,12 +82,12 @@ Rules for **Now**:
   - Else `waiting on review` if `reviewDecision` is empty or `REVIEW_REQUIRED`; `approved` or `changes requested` otherwise.
   - Add `checks failing` if any check in `statusCheckRollup` ended as a failure, cancel or time-out.
 - **Tickets.** Unblocked tickets first, by number. Then blocked tickets (any `blockedBy` issue still `OPEN`), by number, each marked `(blocked)`. Add `— @login` for each claimed (assigned) ticket. Show at most 10, then `+N more` for the rest.
-- **Closed since the last EOD.** Same shape as eod's issue activity: `- [title](link) — state` (`closed` for issues; `merged` or `closed unmerged` for PRs), then one or two bullets summarizing its comments (PRs: description and comments). No bullets if there's nothing to say.
+- **Closed since the last EOD.** Each item in `productivity:eod`'s **Item shape** (step 3).
 - Leave out a part (PRs, Tickets, Closed) with nothing in it. If all three are empty, write "Nothing open."
 
 **Jots** part: `MM-DD HH:MM — <summary>`, oldest first. Leave the part out if there are none.
 
-After the active repos, the quiet lines. Then, if any General jots exist in the last 7 days:
+After the active repos, the quiet lines. Then, if there are any current General jots:
 
 ```
 ## General
@@ -97,4 +102,4 @@ Want a deep-dive on any of these repos?
 
 ## 4. Deep-dive
 
-If the user answers with one or more repos, run the human skill in **repo** mode once for each, in chat. A level named with a repo ("owner/x, proficient") is that repo's `--level`. Any other answer ends the brief.
+If the user names one or more repos, hand the answer to `human:human` in **repo** mode, in chat. Any other answer ends the brief.

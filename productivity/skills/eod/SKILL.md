@@ -7,7 +7,7 @@ description: Wrap up the day. Writes an EOD compilation to the HQ repo (per conn
 
 `/eod` writes the day's **EOD compilation**, `eod/YYYY-MM-DD.md` in the HQ repo, then shows the brief built on it. It reads your session transcripts and GitHub; it never creates issues and never writes in a project repo.
 
-Follow the "Rules for every hq skill" section of the hq skill's `SKILL.md` (config, sync, gh). Find the HQ folder as in its **Find HQ** step.
+Follow the "Rules for every hq skill" section of `productivity:hq` (config, sync, gh, transcripts). Find the HQ folder as in its **Find HQ** step.
 
 Read `repos.txt`. If it lists no repos, say "No connected repos yet. Run /hq add <repo>." and stop.
 
@@ -24,13 +24,11 @@ Turn the start into UTC once, `date -u -d '<start date> 00:00' +%Y-%m-%dT%H:%M:%
 
 ## 2. Sessions
 
-Find which records belong to which repo. Read the same transcript files and fields as the brief's **Left off** (see the brief skill's `SKILL.md`, step 1):
+Find which records belong to which repo, by `productivity:hq`'s transcript rule:
 
-- Top-level `.jsonl` files under `~/.claude/projects/*/`, modified since the start. Skip subagent files (anything in a `subagents/` folder).
-- Skip **orphaned** files: no `"type":"user"` or `"type":"assistant"` records.
-- Skip **superseded** records: a resumed or forked session repeats older records in a new file. Count each record `uuid` once.
+- Only files modified since the start.
 - Keep records whose `timestamp` is at or after the start.
-- Map each record's `cwd` to `owner/name` as brief does: `git -C <cwd> rev-parse --git-common-dir`, then that repo's `git remote get-url origin`, parsed as in hq's **Add** step 1. Worktrees count. Ignore records outside git, and git errors on deleted folders. Ignore record types you don't know. Map each distinct `cwd` once.
+- Here read only `type`, `uuid`, `cwd` and `timestamp`. The subagents below read the messages.
 
 Each record counts toward its own repo, so one session can count toward several repos.
 
@@ -53,14 +51,16 @@ gh pr list -R <repo> --state all --search "updated:>=<start date>" --json number
 
 Keep an item only if its `createdAt`, `closedAt`, `mergedAt`, or a comment or review `createdAt` is at or after the start. For a kept PR, also read its review comments: `gh api repos/<repo>/pulls/<number>/comments`.
 
-Write each kept item as in brief's **Closed since the last EOD**:
+**Item shape.** Write each kept item like this (`productivity:brief` uses the same shape):
 
 ```
 - [#31 Add tile cache](link) — merged
   - Adds a disk cache for tiles; review asked for a size limit, added.
 ```
 
-State: `open` or `closed` for issues; `open`, `merged` or `closed unmerged` for PRs. Then one or two bullets summarizing the comments in the window (PRs: description, comments and review comments). No bullets if there's nothing to say.
+- State: `open` or `closed` for issues; `open`, `merged` or `closed unmerged` for PRs.
+- Then one or two bullets summarizing the comments in the window. For PRs: the description, comments and review comments.
+- No bullets if there's nothing to say.
 
 ## 4. Action items
 
@@ -94,7 +94,7 @@ Covers 2026-10-25 to 2026-10-27.
 
 ## 6. Prune jots
 
-Delete every file in `jots/` whose file-name date is more than 7 days before today. Leave the rest.
+Delete every jot that isn't current (see `productivity:jot`). Leave the rest.
 
 Commit the compilation and the deletions ("EOD <today>") and push (sync rule).
 
@@ -102,7 +102,7 @@ Commit the compilation and the deletions ("EOD <today>") and push (sync rule).
 
 In chat, in this order:
 
-1. **The brief.** Run the brief skill's steps 1–3 (Gather, Order, Show). Its **Last time** now reads the compilation just written. Leave out its closing deep-dive line; it comes last here.
+1. **The brief.** Run `productivity:brief` steps 1–3 (Gather, Order, Show). Its **Last time** now reads the compilation just written. Leave out its closing deep-dive line; it comes last here.
 2. **Action items**, grouped by repo:
    ```
    ## Action items
@@ -116,4 +116,4 @@ In chat, in this order:
    Want a deep-dive on any of these repos?
    ```
 
-Then handle the answer as in the brief skill's step 4 (**Deep-dive**).
+Then handle the answer as in `productivity:brief` step 4 (**Deep-dive**).

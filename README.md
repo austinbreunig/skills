@@ -10,9 +10,9 @@ A Claude Code marketplace with three plugins. `lifecycle` carries one product fr
 |---|---|---|
 | `lifecycle` | Carry one product through development cycles, across fresh sessions | `human`, `mattpocock-skills` |
 | `productivity` | Keep track of many repos from one private HQ repo | `human` |
-| `human` | Explain, show and guide, at the reader's level | nothing |
+| `human` | Explain, show and guide, at the reader's level | nothing, except repo mode, which needs hq (`productivity`) |
 
-Needed plugins install for you.
+Needed plugins install for you. Pages `human` makes for lifecycle go in `.lifecycle/human/`.
 
 ## Prerequisites
 
@@ -74,7 +74,7 @@ Tested with **mattpocock-skills 1.3.1**. If a call to one of its skills breaks, 
 - [`/hq`](productivity/skills/hq/SKILL.md): sets up your HQ repo, shows the home screen, and adds or removes connected repos.
 - [`/brief`](productivity/skills/brief/SKILL.md): where every connected repo stands: where you left off, the last EOD, open PRs and tickets, recent jots.
 - [`/eod`](productivity/skills/eod/SKILL.md): wraps up the day into an EOD compilation, then shows the brief and your action items.
-- [`/jot`](productivity/skills/jot/SKILL.md): saves a short note about this session, or lists current jots.
+- [`/jot`](productivity/skills/jot/SKILL.md): saves a jot about this session, or lists current jots.
 
 **human**
 

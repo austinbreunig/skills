@@ -81,17 +81,15 @@ The Think-it-through box must match the facts in the body. It names options only
 
 A deep-dive on one connected repo: what's open, why, and what could be next. Starts from `/human repo owner/x` (no repo: use the current folder's GitHub `origin`), or from the "Want a deep-dive on any of these repos?" offer at the end of brief and eod. Several repos named there: one deep-dive each. A level named with a repo ("owner/x, proficient") is that repo's `--level`.
 
-**Needs hq.** If `~/.config/hq/config` is missing, say "repo mode needs hq. Run /hq to set it up." and stop. Otherwise follow the "Rules for every hq skill" section of the hq skill's `SKILL.md` (config, sync, gh), and find the HQ folder as in its **Find HQ** step.
+**Needs hq.** If `~/.config/hq/config` is missing, say "repo mode needs hq. Run /hq to set it up." and stop. Otherwise follow the "Rules for every hq skill" section of `productivity:hq` (config, sync, gh, transcripts), and find the HQ folder as in its **Find HQ** step.
 
 **Connected only.** If `repos.txt` doesn't list the repo (ignore case), say "`owner/x` isn't connected. Run /hq add owner/x." and stop.
 
 **Reads, for that repo only.** These replace step 1's sources:
 
-- HQ folder: the repo's section of each EOD compilation (`eod/YYYY-MM-DD.md`) from the last 7 days; the jots in `jots/` dated (by file name) in the last 7 days whose `repo:` line is `owner/name` (ignore case).
-- Left off: the newest session under `~/.claude/projects/` with any record whose `cwd` maps to the repo (`git -C <cwd> rev-parse --git-common-dir`, then that repo's `origin` is `owner/name`, so worktrees count). Use that session's newest `away_summary` record, else its `ai-title`.
+- HQ folder: the repo's section of each EOD compilation (`eod/YYYY-MM-DD.md`) from the last 7 days; the current jots (see `productivity:jot`) whose `repo:` line is `owner/name` (ignore case).
+- Left off: found exactly as `productivity:brief`'s **Left off** (step 1), by `productivity:hq`'s transcript rule, reading the same fields.
 - Live `gh`: open PRs (draft, review state, check status, linked tickets); open tickets with body and latest comments, assignee, blocked-by, last update; tickets closed in the last 7 days; any open `wayfinder:map` issue. The repo's `GLOSSARY.md` and README, via `gh api` if it isn't the current folder.
-
-No raw transcripts: from session files read only the `cwd`, `away_summary` and `ai-title` fields, never the messages.
 
 **Sections**, in this order (they replace section 3's list):
 
@@ -102,7 +100,7 @@ No raw transcripts: from session files read only the `cwd`, `away_summary` and `
 5. **Recent work:** cards from the repo's sections of the last 7 days of EOD compilations, and the left-off line.
 6. **Open tickets:** one card each: what it is, why it's still open (from its body and latest comments), who claimed it.
 7. **What could go wrong:** stale or stuck work: failing checks, PRs waiting on review, tickets not updated in 7+ days.
-8. **Next steps:** facts only, each linked, not ranked: the unblocked tickets, open EOD action items, and the stuck items. The guiding questions make the reader weigh them.
+8. **Next steps:** facts only, each linked, not ranked: the top unblocked ticket, open EOD action items, and the stuck items. The guiding questions make the reader weigh them.
 9. **Jots, Glossary, Go deeper.**
 
 No "What changed and why" and no "How we know it works".
@@ -136,7 +134,7 @@ No "What changed and why" and no "How we know it works".
 - Every diagram gets a one-line caption saying what to notice. Charts get labeled axes, units, and the checks and break point marked on them.
 - Go deeper uses collapsible `<details>` sections.
 - Save to `.lifecycle/human/<cycle>-<mode>-<short-name>.html` if `.lifecycle/` exists, else `docs/human/<mode>-<short-name>.html`.
-- **repo mode:** save instead in the HQ folder at `human/YYYY-MM-DD-owner-name.html` (today's date; overwrite a same-day page, keep older ones). Then commit and push under hq's sync rule.
+- **repo mode:** save instead in the HQ folder at `human/YYYY-MM-DD-owner-name.html` (today's date; overwrite a same-day page, keep older ones). Then commit and push under `productivity:hq`'s sync rule.
 - **pr mode:** link the page from the PR description.
 - **ramp mode:** link the page from `RAMP.md` and `.lifecycle/STATE.md`.
 

@@ -55,7 +55,7 @@ One line per finished cycle: N, destination, verdict, touches, default hit rate,
 
 ## Current cycle
 Cycle: N
-Destination: e.g. "POC proving the change-detection algorithm on one county"
+Destination: e.g. "POC proving the import works on one sample file"
 Route: map | grill
 Ramp: yes | no
 Harness: path to the ramp harness, if one exists | none
@@ -159,7 +159,7 @@ The ramp runs on a built pipeline: the tracer pipeline on the map route, or the 
 | # | Step | Kind | Gate: done when |
 |---|---|---|---|
 | R1 | Plan the ramp | agent: `lifecycle:ramp`. With an existing harness, the plan extends it | A ramp map linked in STATE, or the user chose a small ramp |
-| R2 | Walk the ramp map | human: `/wayfinder <ramp map>` until it reaches its destination, then `/to-spec <ramp map>`. Small ramp: `/grilling` on ramp's three seed questions, then `/to-spec`, in one session | A ramp harness spec exists; link it in STATE |
+| R2 | Walk the ramp map | human: `/wayfinder <ramp map>` until it reaches its destination, then `/to-spec <ramp map>`. Small ramp: `/grilling` on `lifecycle:ramp`'s three seed questions, then `/to-spec`, in one session | A ramp harness spec exists; link it in STATE |
 
 The harness spec then goes through the spec chain (S3 skipped) and the build chain. Once its PR is signed off, record the harness path in STATE's `Harness` line.
 
@@ -170,9 +170,9 @@ The harness spec then goes through the spec chain (S3 skipped) and the build cha
 
 Then the Verdict (human) and the Retro.
 
-**Small ramp.** If `ramp` returns its "This ramp looks small. Skip the map?" question, that is a human step. Reply with the three seed questions and the two answers: `/lifecycle small ramp` (then R2's small path) or `/lifecycle ramp map` (rerun R1 to chart the map).
+**Small ramp.** If `lifecycle:ramp` returns its "This ramp looks small. Skip the map?" question, that is a human step. Reply with the three seed questions and the two answers: `/lifecycle small ramp` (then R2's small path) or `/lifecycle ramp map` (rerun R1 to chart the map).
 
-**Not ready to ramp.** If `ramp` stops with "Not ready to ramp", that is a failure: reply with its message.
+**Not ready to ramp.** If `lifecycle:ramp` stops with "Not ready to ramp", that is a failure: reply with its message.
 
 ## Run ramp
 
@@ -210,7 +210,7 @@ When the subagent returns, check the step's gate yourself. Gate met → add its 
 
 Pocock's `to-spec` and `to-tickets` can't be called as skills by an agent. A worker follows their files instead:
 
-1. Find the installed `mattpocock-skills` plugin's `SKILL.md` by skill name, not by version folder: search `~/.claude/plugins/` for paths that contain `mattpocock-skills` and end in `/to-tickets/SKILL.md` (or `/to-spec/SKILL.md`). If there are several, use the one most recently modified.
+1. **Find an installed skill's `SKILL.md`** by skill name, not by version folder: search `~/.claude/plugins/` for paths that end in `/<skill>/SKILL.md` (here `to-tickets` or `to-spec`, under `mattpocock-skills`). If there are several, use the one most recently modified. `lifecycle:ramp` finds wayfinder the same way.
 2. Follow it, with one change: every step that checks with the user ("check the seams with the user", "Quiz the user", "iterate until the user approves") becomes "this is reviewed at spec sign-off". Publish without waiting.
 3. Not found: stop and reply with the command for the user to run themselves, e.g.:
 

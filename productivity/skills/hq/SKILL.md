@@ -22,6 +22,13 @@ Every branch first runs **Find HQ**, except Setup itself.
 - **Sync:** run `git pull` in the HQ folder before reading it. Right after writing to it, commit and push, without asking. If a pull or push fails, say so in one line and keep going on the local copy.
 - **gh:** if any `gh` call fails because `gh` is missing or logged out, stop and show the fix from Setup step 1.
 - **Connected repo:** stored as `owner/name` only, one per line in `repos.txt`. Local paths are never stored.
+- **Transcripts** (`productivity:brief`, `productivity:eod`, `human:human` repo mode). Each skill says which fields it reads; never more.
+  - **Files:** the top-level `.jsonl` files under `~/.claude/projects/*/`.
+  - Skip **subagent** files: anything in a `subagents/` folder.
+  - Skip **orphaned** files: no `"type":"user"` or `"type":"assistant"` records.
+  - Skip **superseded** records: a resumed or forked session repeats older records in a new file. Count each record `uuid` once.
+  - **Repo:** map each distinct `cwd` once: `git -C <cwd> rev-parse --git-common-dir`, then that repo's `git remote get-url origin`, parsed as in **Add** step 1, gives `owner/name`. Worktrees count. Ignore records outside git, and git errors on deleted folders.
+  - Ignore record types you don't know.
 
 ## Find HQ
 
@@ -65,7 +72,7 @@ Connected repos:
 
 /brief                where every connected repo stands
 /eod                  wrap up the day into an EOD compilation
-/jot <text>           save a short note for this repo
+/jot <text>           save a jot for this repo
 /hq add|remove <repo> connect or drop a repo
 ```
 

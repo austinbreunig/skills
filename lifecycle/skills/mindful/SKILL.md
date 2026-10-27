@@ -28,7 +28,7 @@ KISS, YAGNI and DRY live inside these: subtract first and the uncarved block are
 
 Simple is not "fewest parts." Separate parts can be simpler than a few tangled ones. Wu wei is not "do nothing."
 
-Background reading, with six more patterns and the sources: `docs/eastern-design.md` in the skills repo.
+Background reading, with six more patterns and the sources: https://github.com/austinbreunig/skills/blob/main/docs/eastern-design.md
 
 ## Mode
 
