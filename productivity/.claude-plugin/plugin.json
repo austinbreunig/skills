@@ -1,0 +1,5 @@
+{
+  "name": "productivity",
+  "description": "Keep track of all your repos from one place.",
+  "dependencies": ["human"]
+}
