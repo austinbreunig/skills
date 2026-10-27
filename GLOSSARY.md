@@ -47,7 +47,7 @@ The wayfinder map, charted by `/ramp`, that decides the ramp plan. Its destinati
 _Avoid_: test map
 
 **Spec sign-off**:
-The user's approval of a spec, together with its tickets and locked seams, from its human page.
+The user's approval of a spec, together with its tickets, locked seams and mindful's cuts, from its human page.
 _Avoid_: spec review, plan approval
 
 **PR sign-off**:
@@ -60,7 +60,7 @@ _Avoid_: watch mode, background check
 
 **Review**:
 The mode where `/mindful` judges a finished spec (or its tickets, or a built branch) for shape and approach, applies its cuts directly, and writes each cut and why on the spec so the user can accept or undo it at spec sign-off.
-_Avoid_: audit, simplicity gate, wu-wei pass
+_Avoid_: audit, simplicity gate
 
 **Entry point**:
 The one command that takes an input and an output location and runs the whole pipeline. `/ramp` won't plan without one.
