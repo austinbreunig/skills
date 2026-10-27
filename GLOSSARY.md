@@ -86,6 +86,10 @@ _Avoid_: metric, quantitative check, threshold
 A call only the user can make at a level, by looking at samples of the output.
 _Avoid_: qualitative check, manual review, eyeball test
 
+**Run ramp**:
+The `/lifecycle` agent step that runs the built ramp harness level by level, stops only at judgment checks or failures it can't fix with a small change, and writes `RAMP.md`. The user gives judgment calls as comments on a ticket per check.
+_Avoid_: ramp run, execute ramp, ramp test
+
 ## Productivity
 
 **HQ repo**:
