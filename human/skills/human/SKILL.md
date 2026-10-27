@@ -58,7 +58,7 @@ Answer in one sentence each before writing:
 
 ## 3. Sections
 
-In this order, for every mode. Leave out any section with nothing real in it.
+In this order, for every mode except repo (see **Repo mode**). Leave out any section with nothing real in it.
 
 1. **Think it through** (top, impossible to miss): one line naming the question from story step 4, then 2–4 guiding questions. Each guiding question points to the section that helps answer it, e.g. "What breaks if the cache is cold? → What could go wrong". Pick the question type from the reader level. If there is nothing to decide, the whole box is the one line "Nothing to decide, just read.", with no guiding questions.
 2. **In one paragraph:** the story from step 2.
@@ -68,7 +68,6 @@ In this order, for every mode. Leave out any section with nothing real in it.
    - ramp: levels on a chart against the checks, the break point, and accuracy change.
    - spec: the parts and the seams between them.
    - map: decisions made, the frontier and the fog, drawn as a map.
-   - repo: see **Repo mode**.
    - explain: whatever the input describes.
 5. **What changed and why:** short cards, one per change or decision: what, why, link to the source.
 6. **What could go wrong:** risks, edge cases, and anything a review or break-it pass flagged, with how each is handled or why it's accepted. Don't make it sound safer than it is.
@@ -82,11 +81,13 @@ The Think-it-through box must match the facts in the body. It names options only
 
 A deep-dive on one connected repo: what's open, why, and what could be next. Starts from `/human repo owner/x` (no repo: use the current folder's GitHub `origin`), or from the "Want a deep-dive on any of these repos?" offer at the end of brief and eod. Several repos named there: one deep-dive each. A level named with a repo ("owner/x, proficient") is that repo's `--level`.
 
-**Needs hq.** If `~/.config/hq/config` is missing, say "repo mode needs hq. Run /hq to set it up." and stop. Otherwise find the HQ folder and pull, as in hq's "Rules for every hq skill".
+**Needs hq.** If `~/.config/hq/config` is missing, say "repo mode needs hq. Run /hq to set it up." and stop. Otherwise follow the "Rules for every hq skill" section of the hq skill's `SKILL.md` (config, sync, gh), and find the HQ folder as in its **Find HQ** step.
+
+**Connected only.** If `repos.txt` doesn't list the repo (ignore case), say "`owner/x` isn't connected. Run /hq add owner/x." and stop.
 
 **Reads, for that repo only.** These replace step 1's sources:
 
-- HQ folder: the repo's `## owner/name` section of each `eod/YYYY-MM-DD.md` from the last 7 days; the jots in `jots/` dated (by file name) in the last 7 days whose `repo:` line is `owner/name`.
+- HQ folder: the repo's section of each EOD compilation (`eod/YYYY-MM-DD.md`) from the last 7 days; the jots in `jots/` dated (by file name) in the last 7 days whose `repo:` line is `owner/name` (ignore case).
 - Left off: the newest session under `~/.claude/projects/` with any record whose `cwd` maps to the repo (`git -C <cwd> rev-parse --git-common-dir`, then that repo's `origin` is `owner/name`, so worktrees count). Use that session's newest `away_summary` record, else its `ai-title`.
 - Live `gh`: open PRs (draft, review state, check status, linked tickets); open tickets with body and latest comments, assignee, blocked-by, last update; tickets closed in the last 7 days; any open `wayfinder:map` issue. The repo's `GLOSSARY.md` and README, via `gh api` if it isn't the current folder.
 
@@ -98,7 +99,7 @@ No raw transcripts: from session files read only the `cwd`, `away_summary` and `
 2. **In one paragraph:** what the repo is and where it stands.
 3. **Background:** what the repo is for, and key terms from its GLOSSARY or README.
 4. **The picture:** open tickets as a map, grouped done (closed in 7 days) / next up (unblocked) / blocked (by which ticket). Each PR sits on the ticket it closes; a PR with no ticket stands alone.
-5. **Recent work:** cards from the last 7 days of EOD sections, and the left-off line.
+5. **Recent work:** cards from the repo's sections of the last 7 days of EOD compilations, and the left-off line.
 6. **Open tickets:** one card each: what it is, why it's still open (from its body and latest comments), who claimed it.
 7. **What could go wrong:** stale or stuck work: failing checks, PRs waiting on review, tickets not updated in 7+ days.
 8. **Next steps:** facts only, each linked, not ranked: the unblocked tickets, open EOD action items, and the stuck items. The guiding questions make the reader weigh them.
