@@ -48,12 +48,6 @@ Contract for `ramp_run.py <step>`: it runs one interval and its QA checks, and p
 - **A QA check fails (exit 1):** stop. Say which check failed. Run no later interval.
 - **The pipeline crashes (exit 2):** stop. Say which interval crashed. Run no later interval.
 
-**Report.** After every run, failed or not, write a .md report from the log, next to the log path. Do this when a QA check failed and when the pipeline crashed too. The report lists each interval run, each diagnostic check in it, and pass or fail for each. Do not add a third mode. The report is part of `--run`.
+**Report.** After every run, failed or not, write a .md report from the log, next to the log path. Do this when a QA check failed and when the pipeline crashed too. The report lists each interval run, each diagnostic check in it, and pass or fail for each.
 
 If `ramp_run.py` is not there, stop and say so. Tell the user to build the harness first.
-
-## Never
-
-- Build the harness. That is `/bones`.
-- Decide whether the project needs ramping.
-- Run past a failure.
