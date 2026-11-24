@@ -40,10 +40,16 @@ class RampSkill(unittest.TestCase):
         for need in ["interval count", "size", "qa check", "at least one", "log path", "scope.md"]:
             self.assertIn(need, body)
 
-    def test_map_card_carries_entry_point_contract(self):
-        body = self.section("--map")
+    def test_one_contract_section_holds_entry_point_rules(self):
+        body = self.section("contract")
         for need in ["ramp_run.py", "<step>", "exit 0", "exit 1", "exit 2"]:
             self.assertIn(need, body)
+
+    def test_exit_codes_are_stated_once(self):
+        self.assertEqual(self.text.lower().count("exit 2"), 1)
+
+    def test_map_puts_contract_in_the_card(self):
+        self.assertIn("contract", self.section("--map"))
 
     def test_run_one_step_prints_qa_results(self):
         body = self.section("--run")
@@ -63,18 +69,18 @@ class RampSkill(unittest.TestCase):
     # --- #35: logging and report ---
 
     def test_log_holds_pipeline_and_qa_lines(self):
-        body = self.section("--map")
+        body = self.section("contract")
         self.assertIn("pipeline log", body)
         self.assertIn("qa diagnostic", body)
         self.assertIn("log path", body)
 
     def test_log_line_format_is_fixed(self):
-        body = self.section("--map")
+        body = self.section("contract")
         for need in ["`pipeline`", "`qa`", "`pass`", "`fail`"]:
             self.assertIn(need, body)
 
     def test_log_flushed_when_run_fails_midway(self):
-        body = self.section("--map")
+        body = self.section("contract")
         self.assertIn("flush", body)
         self.assertIn("midway", body)
 
