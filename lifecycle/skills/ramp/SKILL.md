@@ -29,7 +29,11 @@ Plans the harness. Writes one scope card. Builds nothing.
    - What QA checks run at each interval? At least one each. Performance, data quality, or both.
    - What is the log path?
 
-3. **Write one card** for the whole harness, even with many components. Use the `/scope` card format at `docs/scope/<slug>/scope.md`. Put the intervals, sizes, QA checks and log path in it. Also put the entry point contract in it, so `/bones` builds to it: `ramp_run.py <step>` runs one interval and prints its QA results. Exit 0 means all QA checks passed. Exit 1 means a QA check failed. Exit 2 means the pipeline crashed. Ask the user to confirm it.
+3. **Write one card** for the whole harness, even with many components. Use the `/scope` card format at `docs/scope/<slug>/scope.md`. Put the intervals, sizes, QA checks and log path in it. Also put the entry point contract in it, so `/bones` builds to it: `ramp_run.py <step>` runs one interval and prints its QA results. Exit 0 means all QA checks passed. Exit 1 means a QA check failed. Exit 2 means the pipeline crashed.
+
+   Also put the log contract in it. `ramp_run.py` wraps the pipeline and exposes its pipeline logs. It adds its own QA diagnostic lines. It writes both to the log path. It flushes the log even when the run fails midway. Every pipeline line starts with `PIPELINE`. Every QA line starts with `QA`, then the interval, the check name, and `PASS` or `FAIL`.
+
+   Ask the user to confirm it.
 
 The card is then built with `/bones`.
 
@@ -43,6 +47,8 @@ Contract for `ramp_run.py <step>`: it runs one interval and its QA checks, and p
 - **`/ramp --run`:** start over at s0. Run each interval in order, one `ramp_run.py` call each. Show each one's QA results.
 - **A QA check fails (exit 1):** stop. Say which check failed. Run no later interval.
 - **The pipeline crashes (exit 2):** stop. Say which interval crashed. Run no later interval.
+
+**Report.** After every run, failed or not, write a .md report from the log, next to the log path. Do this when a QA check failed and when the pipeline crashed too. The report lists each interval run, each diagnostic check in it, and pass or fail for each. Do not add a third mode. The report is part of `--run`.
 
 If `ramp_run.py` is not there, stop and say so. Tell the user to build the harness first.
 

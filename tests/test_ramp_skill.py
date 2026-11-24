@@ -60,6 +60,35 @@ class RampSkill(unittest.TestCase):
         body = self.section("--run")
         self.assertIn("crash", body)
 
+    # --- #35: logging and report ---
+
+    def test_log_holds_pipeline_and_qa_lines(self):
+        body = self.section("--map")
+        self.assertIn("pipeline log", body)
+        self.assertIn("qa diagnostic", body)
+        self.assertIn("log path", body)
+
+    def test_log_line_format_is_fixed(self):
+        body = self.section("--map")
+        for need in ["`pipeline`", "`qa`", "`pass`", "`fail`"]:
+            self.assertIn(need, body)
+
+    def test_log_flushed_when_run_fails_midway(self):
+        body = self.section("--map")
+        self.assertIn("flush", body)
+        self.assertIn("midway", body)
+
+    def test_report_written_after_every_run(self):
+        body = self.section("--run")
+        self.assertIn(".md report", body)
+        self.assertIn("every run", body)
+        self.assertIn("crash", body)
+
+    def test_report_lists_intervals_checks_and_pass_fail(self):
+        body = self.section("--run")
+        for need in ["each interval", "diagnostic check", "pass", "fail"]:
+            self.assertIn(need, body)
+
 
 if __name__ == "__main__":
     unittest.main()
