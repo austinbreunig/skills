@@ -1,3 +1,8 @@
+---
+name: bones
+description: Build the thinnest working skeleton of one component from a confirmed /scope card, with simple, test-first code, so it stands on its own. Use for /bones.
+---
+
 # Bones
 
 Build exactly what the scope card says, as thin as possible, test first, so it stands. No growing. Your ideas wait until asked.

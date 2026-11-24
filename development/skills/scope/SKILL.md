@@ -1,3 +1,8 @@
+---
+name: scope
+description: Define the scope of one part with the user by asking sharp questions, and write it as a scope card in their words. Does not build and does not write a spec. Use for /scope, after a /map ticket exists.
+---
+
 # Scope
 
 The user defines the scope. You help them finish it with sharp questions. You don't build, and you don't write a spec.

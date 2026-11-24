@@ -1,3 +1,8 @@
+---
+name: map
+description: Break a product into parts the user names. Each part becomes a small ticket that goes through /scope, then /bones. Use for /map.
+---
+
 # Map
 
 The user names the parts. Each part becomes a small ticket. Each ticket goes through /scope, then /bones. The map is done when every part stands on its own.

@@ -18,6 +18,11 @@
       "name": "human",
       "source": "./human",
       "description": "Explain anything in plain words and pictures, at the reader's level."
+    },
+    {
+      "name": "development",
+      "source": "./development",
+      "description": "Map the parts, scope each one, build the bones."
     }
   ]
 }
