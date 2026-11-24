@@ -63,10 +63,11 @@ Two kinds:
 Format:
 
 **Q1 (gap | assumption): <question, under 20 words>**
-Why: <answer A> → <what changes>. <answer B> → <what changes>.
+Why: Give explanation for why you are asking the question. If it was from the user, then just say so.
+Options:<answer A> → <what changes>. <answer B> → <what changes>.
 
 If both answers lead to the same thing, don't ask.
-
+   
 ## Helping the user decide
 
 Never give your answer to a "what do you want" question. Help the user find theirs:
